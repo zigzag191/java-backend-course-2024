@@ -1,4 +1,4 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import com.pengrad.telegrambot.ExceptionHandler;
 import com.pengrad.telegrambot.TelegramBot;
@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.response.BaseResponse;
+import edu.java.bot.telegramapi.response.TelegramMessageSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;

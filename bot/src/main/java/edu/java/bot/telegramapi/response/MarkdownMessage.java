@@ -1,4 +1,4 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.response;
 
 import java.util.Set;
 

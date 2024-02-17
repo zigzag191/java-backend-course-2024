@@ -1,7 +1,8 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import com.pengrad.telegrambot.model.BotCommand;
-import edu.java.bot.telegramapi.exceptions.DispatcherException;
+import edu.java.bot.telegramapi.exception.DispatcherException;
+import edu.java.bot.telegramapi.response.MarkdownMessage;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;

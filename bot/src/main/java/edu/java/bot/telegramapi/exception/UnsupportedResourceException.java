@@ -1,4 +1,4 @@
-package edu.java.bot.telegramapi.exceptions;
+package edu.java.bot.telegramapi.exception;
 
 public class UnsupportedResourceException extends RuntimeException {
 }

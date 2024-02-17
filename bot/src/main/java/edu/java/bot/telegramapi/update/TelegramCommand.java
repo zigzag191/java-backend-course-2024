@@ -1,4 +1,4 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,8 +1,9 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.telegramapi.response.TelegramMessageSender;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
@@ -39,8 +40,12 @@ public class TelegramUpdateListener {
             var response = updateDispatcher.processUpdate(update.message().chat().id(), update.message().text());
             var result = telegramMessageSender.send(chatId, response);
             if (!result.isOk()) {
-                log.error("error when sending response to " + chatId + ": "
-                    + result.description() + " [" + result.errorCode() + "]");
+                log.error(
+                    "error when sending response to {}: {} [{}]",
+                    chatId,
+                    result.description(),
+                    result.errorCode()
+                );
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

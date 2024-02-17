@@ -1,8 +1,10 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import edu.java.bot.service.UserService;
-import edu.java.bot.telegramapi.exceptions.InvalidUrlException;
-import edu.java.bot.telegramapi.exceptions.UnsupportedResourceException;
+import edu.java.bot.telegramapi.exception.UnsupportedResourceException;
+import edu.java.bot.telegramapi.response.MarkdownMessage;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,7 +41,7 @@ public class UpdateProcessor {
             } else {
                 return new MarkdownMessage("Ссылка ").escape(text).plain(" уже отслеживается\\.");
             }
-        } catch (InvalidUrlException e) {
+        } catch (URISyntaxException | MalformedURLException | IllegalArgumentException e) {
             return new MarkdownMessage("Ссылка ").escape(text).plain(" не является корректным URL\\.");
         } catch (UnsupportedResourceException e) {
             return new MarkdownMessage("Ресурс по ссылке ").escape(text).plain(" не поддерживается");

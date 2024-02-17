@@ -1,6 +1,7 @@
-package edu.java.bot.telegramapi;
+package edu.java.bot.telegramapi.update;
 
 import edu.java.bot.service.TestUserService;
+import edu.java.bot.telegramapi.response.MarkdownMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
