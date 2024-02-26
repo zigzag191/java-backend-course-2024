@@ -29,7 +29,7 @@ public class StackOverflowClient {
 
     public Activities getNewActivities(long questionId, OffsetDateTime fromDate) {
         if (fromDate == null) {
-            throw new RuntimeException("fromDate param cannot be null");
+            throw new IllegalArgumentException("fromDate param cannot be null");
         }
 
         var newAnswers = getNewAnswers(questionId, fromDate);

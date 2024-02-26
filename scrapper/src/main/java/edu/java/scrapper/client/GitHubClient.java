@@ -30,7 +30,7 @@ public class GitHubClient {
 
     public List<GitHubActivityResponse> getPastDayActivities(String owner, String repo) {
         if (owner == null || repo == null) {
-            throw new RuntimeException("owner and repo params cannot be null");
+            throw new IllegalArgumentException("owner and repo params cannot be null");
         }
 
         var response = webClient.get()
