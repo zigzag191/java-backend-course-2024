@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.client.StackOverflowClient;
 import java.util.Objects;
@@ -22,6 +23,11 @@ public class ClientConfig {
     public GitHubClient gitHubClient(ApplicationConfig config) {
         var baseUrl = Objects.requireNonNullElse(config.githubBaseUrl(), GITHUB_DEFAULT_BASE_URL);
         return new GitHubClient(baseUrl);
+    }
+
+    @Bean
+    public BotClient botClient(ApplicationConfig config) {
+        return new BotClient(config.botBaseUrl());
     }
 
 }
