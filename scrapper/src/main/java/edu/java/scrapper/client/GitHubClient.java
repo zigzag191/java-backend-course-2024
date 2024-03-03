@@ -2,7 +2,7 @@ package edu.java.scrapper.client;
 
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
-import edu.java.scrapper.client.exception.BadRequestException;
+import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -55,10 +55,10 @@ public class GitHubClient {
             var timeoutReset = getRateLimitTimeOutResetTime(response);
             return Mono.error(new ApiTimeoutException(timeoutReset));
         }
-        if (statusCode.is4xxClientError()) {
-            return Mono.error(new BadRequestException(statusCode.value()));
-        }
-        return Mono.error(new RuntimeException("unable to get result, received status code: " + statusCode.value()));
+        return response
+            .bodyToMono(String.class)
+            .switchIfEmpty(Mono.just(""))
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(statusCode.value(), error)));
     }
 
     private boolean isRateLimitTimeOut(HttpStatusCode statusCode) {

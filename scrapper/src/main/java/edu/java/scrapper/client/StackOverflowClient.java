@@ -2,7 +2,7 @@ package edu.java.scrapper.client;
 
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
-import edu.java.scrapper.client.exception.BadRequestException;
+import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import java.time.OffsetDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -75,11 +75,10 @@ public class StackOverflowClient {
     }
 
     private Mono<Exception> determineException(ClientResponse response) {
-        var statusCode = response.statusCode();
-        if (statusCode.is4xxClientError()) {
-            return Mono.error(new BadRequestException(statusCode.value()));
-        }
-        return Mono.error(new RuntimeException("unable to get result, received status code: " + statusCode.value()));
+        return response
+            .bodyToMono(String.class)
+            .switchIfEmpty(Mono.just(""))
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(response.statusCode().value(), error)));
     }
 
     public record Activities(StackOverflowAnswersResponse answers, StackOverflowCommentsResponse comments) {

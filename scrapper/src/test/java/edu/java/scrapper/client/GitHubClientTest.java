@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
-import edu.java.scrapper.client.exception.BadRequestException;
+import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import java.time.Instant;
@@ -69,8 +69,15 @@ public class GitHubClientTest {
 
     @Test
     void badRequestShouldThrow() {
-        assertThatExceptionOfType(BadRequestException.class)
-            .isThrownBy(() -> client.getPastDayActivities("wrong_name", "wrong_repo"));
+        stubFor(get("/repos/wrong_name/wrong_repo/activities?time_period=day")
+            .willReturn(badRequest()
+                .withStatus(409)
+                .withBody("bad request")));
+
+        assertThatExceptionOfType(UnsuccessfulRequestException.class)
+            .isThrownBy(() -> client.getPastDayActivities("wrong_name", "wrong_repo"))
+            .extracting(UnsuccessfulRequestException::getStatusCode, UnsuccessfulRequestException::getResponseBody)
+            .contains(409, "bad request");
     }
 
     @Test
@@ -82,7 +89,7 @@ public class GitHubClientTest {
 
         assertThatExceptionOfType(ApiTimeoutException.class)
             .isThrownBy(() -> client.getPastDayActivities("timeout", "timeout"))
-            .extracting("rateLimitResetTime")
+            .extracting(ApiTimeoutException::getRateLimitResetTime)
             .isEqualTo(Instant
                 .ofEpochSecond(1708861220)
                 .atZone(ZoneId.systemDefault())
