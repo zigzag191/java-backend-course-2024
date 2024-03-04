@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LinkUpdateScheduler {
 
-    @Scheduled(fixedDelayString = "#{@'app-edu.java.scrapper.configuration.ApplicationConfig'.scheduler.interval}")
+    @Scheduled(fixedDelayString = "#{@scheduler.interval}")
     public void update() {
         log.info("scheduled method was invoked");
     }

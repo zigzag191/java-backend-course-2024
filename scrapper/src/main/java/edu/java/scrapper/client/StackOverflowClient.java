@@ -20,11 +20,8 @@ public class StackOverflowClient {
 
     private final WebClient webClient;
 
-    public StackOverflowClient(String baseUrl) {
-        webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .defaultStatusHandler(code -> !code.is2xxSuccessful(), this::determineException)
-            .build();
+    public StackOverflowClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public Activities getNewActivities(long questionId, OffsetDateTime fromDate) {
@@ -56,6 +53,7 @@ public class StackOverflowClient {
                 .queryParam(FROM_DATE_QUERY_PARAM, fromDate.toEpochSecond())
                 .build(questionId))
             .retrieve()
+            .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
             .toEntity(StackOverflowAnswersResponse.class);
     }
 
@@ -71,6 +69,7 @@ public class StackOverflowClient {
                 .queryParam(FROM_DATE_QUERY_PARAM, fromDate.toEpochSecond())
                 .build(questionId))
             .retrieve()
+            .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
             .toEntity(StackOverflowCommentsResponse.class);
     }
 

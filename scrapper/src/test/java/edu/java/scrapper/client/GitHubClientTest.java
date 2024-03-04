@@ -7,6 +7,7 @@ import edu.java.scrapper.client.exception.ApiTimeoutException;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -46,12 +47,15 @@ public class GitHubClientTest {
 
     @BeforeAll
     static void createClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        client = new GitHubClient(wireMockRuntimeInfo.getHttpBaseUrl());
+        var webClient = WebClient.builder()
+            .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
+            .build();
+        client = new GitHubClient(webClient);
     }
 
     @Test
     void newActivitiesShouldBeRequestedCorrectly() {
-        stubFor(get("/repos/owner_name/repo_name/activities?time_period=day")
+        stubFor(get("/repos/owner_name/repo_name/activity?time_period=day")
             .willReturn(ok()
                 .withHeader("Content-Type", "application/json; charset=utf-8")
                 .withBody(TEST_RESPONSE_BODY)));
@@ -69,7 +73,7 @@ public class GitHubClientTest {
 
     @Test
     void badRequestShouldThrow() {
-        stubFor(get("/repos/wrong_name/wrong_repo/activities?time_period=day")
+        stubFor(get("/repos/wrong_name/wrong_repo/activity?time_period=day")
             .willReturn(badRequest()
                 .withStatus(409)
                 .withBody("bad request")));
@@ -82,7 +86,7 @@ public class GitHubClientTest {
 
     @Test
     void timeOutResetTimeShouldBeDeterminedCorrectly() {
-        stubFor(get("/repos/timeout/timeout/activities?time_period=day")
+        stubFor(get("/repos/timeout/timeout/activity?time_period=day")
             .willReturn(badRequest()
                 .withStatus(429)
                 .withHeader("X-RateLimit-Reset", "1708861220")));
