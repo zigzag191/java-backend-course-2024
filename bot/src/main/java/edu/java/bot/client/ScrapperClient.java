@@ -11,6 +11,8 @@ import edu.java.common.exception.UnsuccessfulRequestException;
 import java.net.URI;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -22,34 +24,15 @@ public class ScrapperClient {
     public static final String NULL_LINK_EXCEPTION_MESSAGE = "link param cannot be null";
     public final WebClient webClient;
 
-    public ScrapperClient(String baseUrl) {
-        webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .defaultStatusHandler(
-                code -> code.equals(HttpStatus.BAD_REQUEST) || code.equals(HttpStatus.NOT_FOUND),
-                response -> response
-                    .bodyToMono(ApiErrorResponse.class)
-                    .flatMap(error -> Mono.error(new BadScrapperApiRequestException(
-                        response.statusCode().value(),
-                        error
-                    )))
-            )
-            .defaultStatusHandler(
-                code -> !code.equals(HttpStatus.OK),
-                response -> response
-                    .bodyToMono(String.class)
-                    .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
-                        response.statusCode().value(),
-                        error
-                    )))
-            )
-            .build();
+    public ScrapperClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public void registerChat(long chatId) {
         webClient.post()
             .uri(TG_CHAT_TEMPLATE_URL, chatId)
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
             .block();
     }
@@ -58,6 +41,7 @@ public class ScrapperClient {
         webClient.delete()
             .uri(TG_CHAT_TEMPLATE_URL, chatId)
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
             .block();
     }
@@ -67,6 +51,7 @@ public class ScrapperClient {
             .uri(LINKS_TEMPLATE_URL)
             .header(TG_CHAT_ID_PARAM_HEADER, String.valueOf(chatId))
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(ListLinksResponse.class)
             .block();
     }
@@ -76,10 +61,11 @@ public class ScrapperClient {
             throw new IllegalArgumentException(NULL_LINK_EXCEPTION_MESSAGE);
         }
         return webClient.post()
-            .uri("LINKS_TEMPLATE_URL")
+            .uri(LINKS_TEMPLATE_URL)
             .bodyValue(new AddLinkRequest(URI.create(link)))
             .header(TG_CHAT_ID_PARAM_HEADER, String.valueOf(chatId))
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(LinkResponse.class)
             .block();
     }
@@ -93,6 +79,7 @@ public class ScrapperClient {
             .bodyValue(new RemoveLinkRequest(URI.create(link)))
             .header(TG_CHAT_ID_PARAM_HEADER, String.valueOf(chatId))
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(LinkResponse.class)
             .block();
     }
@@ -101,8 +88,34 @@ public class ScrapperClient {
         return webClient.get()
             .uri("/links/supported")
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(SupportedResourcesResponse.class)
             .block();
+    }
+
+    private Mono<Exception> determineException(ClientResponse response) {
+        var status = response.statusCode();
+        if (isKnownScrapperError(status)) {
+            return response
+                .bodyToMono(ApiErrorResponse.class)
+                .flatMap(error -> Mono.error(new BadScrapperApiRequestException(
+                    status.value(),
+                    error
+                )));
+        }
+        return response
+            .bodyToMono(String.class)
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
+                status.value(),
+                error
+            )));
+    }
+
+    private boolean isKnownScrapperError(HttpStatusCode status) {
+        return status.equals(HttpStatus.BAD_REQUEST)
+            || status.equals(HttpStatus.NOT_FOUND)
+            || status.equals(HttpStatus.CONFLICT)
+            || status.equals(HttpStatus.NOT_IMPLEMENTED);
     }
 
 }

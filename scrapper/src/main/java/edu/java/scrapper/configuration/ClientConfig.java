@@ -6,6 +6,7 @@ import edu.java.scrapper.client.StackOverflowClient;
 import java.util.Objects;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class ClientConfig {
@@ -26,8 +27,13 @@ public class ClientConfig {
     }
 
     @Bean
-    public BotClient botClient(ApplicationConfig config) {
-        return new BotClient(config.botBaseUrl());
+    public BotClient botClient(WebClient botWebClient) {
+        return new BotClient(botWebClient);
+    }
+
+    @Bean
+    public WebClient botWebClient(WebClient.Builder webClientBuilder, ApplicationConfig config) {
+        return webClientBuilder.baseUrl(config.botBaseUrl()).build();
     }
 
 }

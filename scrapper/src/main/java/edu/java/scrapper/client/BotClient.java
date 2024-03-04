@@ -7,6 +7,7 @@ import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.net.URI;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -14,25 +15,8 @@ public class BotClient {
 
     public final WebClient webClient;
 
-    public BotClient(String baseUrl) {
-        webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .defaultStatusHandler(
-                code -> code.equals(HttpStatus.BAD_REQUEST) || code.equals(HttpStatus.NOT_FOUND),
-                response -> response
-                    .bodyToMono(ApiErrorResponse.class)
-                    .flatMap(error -> Mono.error(new BadBotApiRequestException(response.statusCode().value(), error)))
-            )
-            .defaultStatusHandler(
-                code -> !code.equals(HttpStatus.OK),
-                response -> response
-                    .bodyToMono(String.class)
-                    .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
-                        response.statusCode().value(),
-                        error
-                    )))
-            )
-            .build();
+    public BotClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public void sendLinkUpdate(long id, String link, String description, List<Long> tgChatIds) {
@@ -43,8 +27,27 @@ public class BotClient {
             .uri("/updates")
             .bodyValue(new LinkUpdateRequest(id, URI.create(link), description, tgChatIds))
             .retrieve()
+            .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
             .block();
+    }
+
+    private Mono<Exception> determineException(ClientResponse response) {
+        var status = response.statusCode();
+        if (status.equals(HttpStatus.BAD_REQUEST) || status.equals(HttpStatus.NOT_FOUND)) {
+            return response
+                .bodyToMono(ApiErrorResponse.class)
+                .flatMap(error -> Mono.error(new BadBotApiRequestException(
+                    status.value(),
+                    error
+                )));
+        }
+        return response
+            .bodyToMono(String.class)
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
+                status.value(),
+                error
+            )));
     }
 
 }

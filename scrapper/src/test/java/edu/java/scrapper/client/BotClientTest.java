@@ -7,6 +7,7 @@ import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -36,7 +37,8 @@ public class BotClientTest {
 
     @BeforeAll
     static void createClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        client = new BotClient(wireMockRuntimeInfo.getHttpBaseUrl());
+        var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
+        client = new BotClient(webClient);
     }
 
     @Test
