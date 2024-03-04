@@ -11,6 +11,7 @@ import java.util.List;
 import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
 import static com.github.tomakehurst.wiremock.client.WireMock.serverError;
@@ -27,7 +28,10 @@ public class StackOverflowClientTest {
 
     @BeforeAll
     static void createClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        client = new StackOverflowClient(wireMockRuntimeInfo.getHttpBaseUrl());
+        var webClient = WebClient.builder()
+            .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
+            .build();
+        client = new StackOverflowClient(webClient);
     }
 
     @Test

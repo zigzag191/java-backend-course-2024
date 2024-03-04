@@ -21,11 +21,8 @@ public class GitHubClient {
 
     private final WebClient webClient;
 
-    public GitHubClient(String baseUrl) {
-        webClient = WebClient.builder()
-            .baseUrl(baseUrl)
-            .defaultStatusHandler(code -> !code.is2xxSuccessful(), this::determineException)
-            .build();
+    public GitHubClient(WebClient webClient) {
+        this.webClient = webClient;
     }
 
     public List<GitHubActivityResponse> getPastDayActivities(String owner, String repo) {
@@ -35,10 +32,11 @@ public class GitHubClient {
 
         var response = webClient.get()
             .uri(builder -> builder
-                .path("/repos/{owner}/{repo}/activities")
+                .path("/repos/{owner}/{repo}/activity")
                 .queryParam("time_period", "day")
                 .build(owner, repo))
             .retrieve()
+            .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
             .toEntity(new ParameterizedTypeReference<List<GitHubActivityResponse>>() {})
             .block();
 
