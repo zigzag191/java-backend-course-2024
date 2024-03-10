@@ -55,7 +55,7 @@ public class ControllerAdvice {
     private ResponseEntity<ApiErrorResponse> createErrorResponse(Exception ex, HttpStatus status, String description) {
         var error = new ApiErrorResponse(
             description,
-            status.toString(),
+            String.valueOf(status.value()),
             ex.getClass().getSimpleName(),
             ex.getMessage(),
             Arrays.stream(ex.getStackTrace()).map(StackTraceElement::toString).toList()
