@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.common.dto.ApiErrorResponse;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
+import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ public class BotClientTest {
 
         assertThatNoException().isThrownBy(() -> client.sendLinkUpdate(
             1,
-            "http://example.com",
+            URI.create("http://example.com"),
             "test",
             List.of(1L, 2L, 3L)
         ));
@@ -69,7 +70,7 @@ public class BotClientTest {
             new ApiErrorResponse("test-description", "404", "test-name", "test-message", List.of("a", "b", "c"));
 
         assertThatExceptionOfType(BadBotApiRequestException.class)
-            .isThrownBy(() -> client.sendLinkUpdate(0, "", "", List.of()))
+            .isThrownBy(() -> client.sendLinkUpdate(0, URI.create(""), "", List.of()))
             .extracting(BadBotApiRequestException::getResponseBody)
             .isEqualTo(expectedResponse);
     }

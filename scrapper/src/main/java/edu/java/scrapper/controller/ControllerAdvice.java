@@ -1,11 +1,11 @@
 package edu.java.scrapper.controller;
 
 import edu.java.common.dto.ApiErrorResponse;
-import edu.java.scrapper.controller.exception.LinkIsAlreadyTrackedException;
-import edu.java.scrapper.controller.exception.LinkIsNotTrackedException;
-import edu.java.scrapper.controller.exception.TgChatAlreadyExistsException;
-import edu.java.scrapper.controller.exception.TgChatDoesNotExistException;
-import edu.java.scrapper.controller.exception.UnsupportedResourceException;
+import edu.java.scrapper.domain.service.exception.LinkIsAlreadyTrackedException;
+import edu.java.scrapper.domain.service.exception.LinkIsNotTrackedException;
+import edu.java.scrapper.domain.service.exception.TgChatAlreadyExistsException;
+import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
+import edu.java.scrapper.domain.service.exception.UnsupportedResourceException;
 import java.util.Arrays;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
