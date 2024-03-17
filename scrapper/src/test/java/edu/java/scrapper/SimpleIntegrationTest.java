@@ -29,7 +29,7 @@ public class SimpleIntegrationTest extends IntegrationTest {
         assertThatNoException().isThrownBy(() -> {
             jdbcTemplate.update("INSERT INTO tg_chat VALUES (123)");
             jdbcTemplate.update(
-                "INSERT INTO link (url, last_polled) VALUES ('http://example.com', ?)",
+                "INSERT INTO link (url, type, last_polled) VALUES ('http://example.com', 'GITHUB_REPOSITORY', ?)",
                 OffsetDateTime.now()
             );
             jdbcTemplate.update("INSERT INTO track_info VALUES ((SELECT link_id FROM link LIMIT(1)), 123)");
