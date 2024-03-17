@@ -1,9 +1,9 @@
 package edu.java.scrapper.domain.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor

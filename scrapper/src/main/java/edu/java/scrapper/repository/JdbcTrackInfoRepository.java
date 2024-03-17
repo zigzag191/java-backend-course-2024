@@ -1,10 +1,10 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repository;
 
 import edu.java.scrapper.domain.model.TrackInfo;
+import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import java.util.List;
 
 @Repository
 public class JdbcTrackInfoRepository {

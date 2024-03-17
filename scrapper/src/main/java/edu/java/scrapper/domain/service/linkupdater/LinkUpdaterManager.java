@@ -1,4 +1,4 @@
-package edu.java.scrapper.domain.service.linkprocessor;
+package edu.java.scrapper.domain.service.linkupdater;
 
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.LinkType;
@@ -9,24 +9,14 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 
-public class LinkProcessorManager {
+public class LinkUpdaterManager {
 
     private final List<URI> supportedResources = new ArrayList<>();
-    private final EnumMap<LinkType, LinkProcessor> processors = new EnumMap<>(LinkType.class);
+    private final EnumMap<LinkType, LinkUpdater> processors = new EnumMap<>(LinkType.class);
 
-    public void addProcessor(LinkType type, LinkProcessor processor) {
+    public void addProcessor(LinkType type, LinkUpdater processor) {
         processors.put(type, processor);
         supportedResources.add(processor.getSupportedResource());
-    }
-
-    public Link createLink(URI url) {
-        for (var processor : processors.values()) {
-            var result = processor.createLink(url);
-            if (result != null) {
-                return result;
-            }
-        }
-        throw new UnsupportedResourceException();
     }
 
     public boolean sendUpdates(Link link) {

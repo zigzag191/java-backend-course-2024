@@ -7,13 +7,12 @@ import edu.java.common.dto.ListLinksResponse;
 import edu.java.common.dto.RemoveLinkRequest;
 import edu.java.common.dto.SupportedResourcesResponse;
 import edu.java.scrapper.domain.service.LinkService;
-import edu.java.scrapper.domain.service.linkprocessor.LinkProcessorManager;
+import edu.java.scrapper.domain.service.linkupdater.LinkUpdaterManager;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,13 +34,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class LinksController {
 
     private final LinkService linkService;
-    private final LinkProcessorManager linkProcessorManager;
+    private final LinkUpdaterManager linkUpdaterManager;
 
     @Operation(summary = "Получить список доступных для отслеживания ресурсов")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "Список успешно получен"))
     @GetMapping("/supported")
     public SupportedResourcesResponse getSupportedResources() {
-        return new SupportedResourcesResponse(linkProcessorManager.getSupportedResources());
+        return new SupportedResourcesResponse(linkUpdaterManager.getSupportedResources());
     }
 
     @Operation(summary = "Получить все отслеживаемые ссылки")
@@ -82,7 +81,10 @@ public class LinksController {
                      description = "Ссылка не найдена",
                      content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))})
     @DeleteMapping
-    public LinkResponse removeLink(@RequestHeader("Tg-Chat-Id") long chatId, @RequestBody RemoveLinkRequest linkRequest) {
+    public LinkResponse removeLink(
+        @RequestHeader("Tg-Chat-Id") long chatId,
+        @RequestBody RemoveLinkRequest linkRequest
+    ) {
         log.info("DELETE /link endpoint was triggered");
         var link = linkService.remove(chatId, linkRequest.link());
         return new LinkResponse(link.getLinkId(), link.getUrl());

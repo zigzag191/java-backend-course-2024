@@ -1,12 +1,12 @@
-package edu.java.scrapper.domain.service.linkprocessor;
+package edu.java.scrapper.domain.service.linkupdater;
 
 import edu.java.scrapper.domain.model.Link;
 import java.net.URI;
 
-public interface LinkProcessor {
+public interface LinkUpdater {
 
-    Link createLink(URI url);
     boolean sendUpdates(Link link);
+
     URI getSupportedResource();
 
 }

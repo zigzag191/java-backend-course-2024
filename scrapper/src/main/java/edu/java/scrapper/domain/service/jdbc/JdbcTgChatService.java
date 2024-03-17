@@ -1,24 +1,22 @@
 package edu.java.scrapper.domain.service.jdbc;
 
+import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.service.TgChatService;
-import edu.java.scrapper.domain.service.exception.LinkIsNotTrackedException;
 import edu.java.scrapper.domain.service.exception.TgChatAlreadyExistsException;
 import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
-import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.JdbcLinkRepository;
+import edu.java.scrapper.repository.JdbcTgChatRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import java.net.URI;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class JdbcTgChatService implements TgChatService {
 
     private final JdbcTgChatRepository tgChatRepository;
-    private final JdbcLinkRepository linkRepository;
 
     @Override
     public void register(long tgChatId) {
@@ -37,8 +35,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Override
-    public List<TgChat> listAllTrackingChats(URI url) {
-        var link = linkRepository.findByUrl(url).orElseThrow(LinkIsNotTrackedException::new);
+    public List<TgChat> findAllTrackingChats(Link link) {
         return tgChatRepository.findAllTrackingChats(link);
     }
 

@@ -1,9 +1,9 @@
 package edu.java.scrapper.configuration;
 
 import edu.java.scrapper.domain.model.LinkType;
-import edu.java.scrapper.domain.service.linkprocessor.GithubRepositoryProcessor;
-import edu.java.scrapper.domain.service.linkprocessor.LinkProcessorManager;
-import edu.java.scrapper.domain.service.linkprocessor.StackoverflowQuestionProcessor;
+import edu.java.scrapper.domain.service.linkupdater.GithubRepositoryUpdater;
+import edu.java.scrapper.domain.service.linkupdater.LinkUpdaterManager;
+import edu.java.scrapper.domain.service.linkupdater.StackoverflowQuestionUpdater;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
 public class LinkProcessorsConfig {
 
     @Bean
-    public LinkProcessorManager linkProcessorManager(
-        StackoverflowQuestionProcessor stackoverflowQuestionProcessor,
-        GithubRepositoryProcessor githubRepositoryProcessor
+    public LinkUpdaterManager linkProcessorManager(
+        StackoverflowQuestionUpdater stackoverflowQuestionProcessor,
+        GithubRepositoryUpdater githubRepositoryProcessor
     ) {
-        var linkProcessorManager = new LinkProcessorManager();
+        var linkProcessorManager = new LinkUpdaterManager();
         linkProcessorManager.addProcessor(LinkType.STACK_OVERFLOW_QUESTION, stackoverflowQuestionProcessor);
         linkProcessorManager.addProcessor(LinkType.GITHUB_REPOSITORY, githubRepositoryProcessor);
         return linkProcessorManager;

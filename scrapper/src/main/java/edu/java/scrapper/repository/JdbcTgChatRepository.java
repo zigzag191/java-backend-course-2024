@@ -1,13 +1,13 @@
-package edu.java.scrapper.repository.jdbc;
+package edu.java.scrapper.repository;
 
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.TgChat;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class JdbcTgChatRepository {
