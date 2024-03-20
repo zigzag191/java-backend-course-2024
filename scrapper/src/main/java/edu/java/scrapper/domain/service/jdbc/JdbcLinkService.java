@@ -13,11 +13,13 @@ import edu.java.scrapper.repository.JdbcTrackInfoRepository;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Primary
 @RequiredArgsConstructor
 public class JdbcLinkService implements LinkService {
 

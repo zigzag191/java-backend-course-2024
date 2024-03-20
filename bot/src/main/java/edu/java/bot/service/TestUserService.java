@@ -1,11 +1,13 @@
 package edu.java.bot.service;
 
+import edu.java.common.dto.linkupdate.LinkUpdateInfo;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -52,6 +54,11 @@ public class TestUserService implements UserService {
     @Override
     public Collection<String> getTrackedLinks(long chatId) {
         return userLinks.get(chatId);
+    }
+
+    @Override
+    public void sendUpdates(URI url, List<Long> chatIds, LinkUpdateInfo updateInfo) {
+        log.warn("TestUserService::sendUpdates is not implemented");
     }
 
 }

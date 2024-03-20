@@ -1,6 +1,8 @@
-package edu.java.scrapper.repository;
+package edu.java.scrapper;
 
-import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.repository.JdbcLinkRepository;
+import edu.java.scrapper.repository.JdbcTgChatRepository;
+import edu.java.scrapper.repository.JdbcTrackInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,12 +13,11 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "classpath:application.yml")
 public abstract class RepositoryTest extends IntegrationTest {
 
-    @Autowired JdbcLinkRepository linkRepository;
-    @Autowired JdbcTgChatRepository tgChatRepository;
-    @Autowired JdbcTrackInfoRepository trackInfoRepository;
+    @Autowired protected JdbcLinkRepository linkRepository;
+    @Autowired protected JdbcTgChatRepository tgChatRepository;
+    @Autowired protected JdbcTrackInfoRepository trackInfoRepository;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    @Autowired protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach
     void cleanLinkTable() {

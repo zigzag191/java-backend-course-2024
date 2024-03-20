@@ -22,7 +22,8 @@ public class ScrapperClient {
     public static final String LINKS_TEMPLATE_URL = "/links";
     public static final String TG_CHAT_ID_PARAM_HEADER = "Tg-Chat-Id";
     public static final String NULL_LINK_EXCEPTION_MESSAGE = "link param cannot be null";
-    public final WebClient webClient;
+
+    private final WebClient webClient;
 
     public ScrapperClient(WebClient webClient) {
         this.webClient = webClient;
