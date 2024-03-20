@@ -2,11 +2,13 @@ package edu.java.scrapper.domain.model;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Link {
 
     private Long linkId;

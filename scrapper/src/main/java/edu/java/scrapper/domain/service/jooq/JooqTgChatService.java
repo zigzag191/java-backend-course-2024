@@ -3,10 +3,12 @@ package edu.java.scrapper.domain.service.jooq;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.service.TgChatService;
+import edu.java.scrapper.domain.service.exception.TgChatAlreadyExistsException;
 import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import static edu.java.scrapper.domain.jooq.Tables.LINK;
 import static edu.java.scrapper.domain.jooq.Tables.TG_CHAT;
@@ -20,10 +22,12 @@ public class JooqTgChatService implements TgChatService {
 
     @Override
     public void register(long tgChatId) {
-        var chat = context.newRecord(TG_CHAT);
-        chat.setChatId((int) tgChatId);
-        if (chat.store() != 1) {
-            throw new RuntimeException();
+        try {
+            var chat = context.newRecord(TG_CHAT);
+            chat.setChatId((int) tgChatId);
+            chat.store();
+        } catch (DuplicateKeyException ex) {
+            throw new TgChatAlreadyExistsException();
         }
     }
 

@@ -13,13 +13,22 @@ public class GithubRepoUpdateInfo extends LinkUpdateInfo {
 
     public record Activity(ActivityType activityType, OffsetDateTime timestamp) {}
 
+    @Getter
     public enum ActivityType {
-        PUSH,
-        FORCE_PUSH,
-        BRANCH_DELETION,
-        BRANCH_CREATION,
-        PR_MERGE,
-        MERGE_QUEUE_MERGE
+
+        PUSH("Новый push"),
+        FORCE_PUSH("Новый force push"),
+        BRANCH_DELETION("Создание ветки"),
+        BRANCH_CREATION("Удаление ветки"),
+        PR_MERGE("Слияние пул реквеста"),
+        MERGE_QUEUE_MERGE("Слияние очереди слияния");
+
+        private final String description;
+
+        ActivityType(String description) {
+            this.description = description;
+        }
+
     }
 
 }

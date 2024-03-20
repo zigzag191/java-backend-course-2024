@@ -65,7 +65,9 @@ public class JooqLinkService implements LinkService {
 
     @Override
     public List<Link> findLongestNotPolled(int limit) {
-        return context.select(LINK).orderBy(LINK.LAST_POLLED.desc()).limit(limit)
+        return context.select(LINK.fields())
+            .from(LINK)
+            .orderBy(LINK.LAST_POLLED.asc()).limit(limit)
             .stream()
             .map(this::linkRecordToDomainLink)
             .toList();
@@ -87,15 +89,21 @@ public class JooqLinkService implements LinkService {
 
     @Override
     public void updateLastPolled(Link link) {
-        context.update(LINK).set(LINK.LAST_POLLED, link.getLastPolled()).where(LINK.URL.eq(link.getUrl().toString()));
+        context.update(LINK)
+            .set(LINK.LAST_POLLED, link.getLastPolled())
+            .where(LINK.URL.eq(link.getUrl().toString()))
+            .execute();
     }
 
     private boolean tgChatExists(long tgChatId) {
-        return context.fetchExists(context.selectOne().from(TG_CHAT).where(TG_CHAT.CHAT_ID.eq((int) tgChatId)));
+        return context.fetchExists(context.selectOne()
+            .from(TG_CHAT)
+            .where(TG_CHAT.CHAT_ID.eq((int) tgChatId)));
     }
 
     private Link linkRecordToDomainLink(Record link) {
         return new Link(
+            Long.valueOf(link.getValue(LINK.LINK_ID)),
             URI.create(link.getValue(LINK.URL)),
             LinkType.valueOf(link.getValue(LINK.TYPE)),
             link.getValue(LINK.LAST_POLLED)
