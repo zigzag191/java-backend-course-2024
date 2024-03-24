@@ -61,4 +61,10 @@ public class TestUserService implements UserService {
         log.warn("TestUserService::sendUpdates is not implemented");
     }
 
+    @Override
+    public List<URI> getSupportedResources() {
+        log.warn("TestUserService::getSupportedResources is not implemented");
+        return List.of();
+    }
+
 }
