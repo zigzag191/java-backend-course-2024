@@ -90,6 +90,11 @@ public class ScrapperUserService implements UserService {
         }
     }
 
+    @Override
+    public List<URI> getSupportedResources() {
+        return scrapperClient.getSupportedResources().resources();
+    }
+
     private void sendGithubRepoUpdate(URI url, List<Long> chatIds, GithubRepoUpdateInfo info) {
         var updates = info.getActivities().stream()
             .collect(Collectors.groupingBy(
