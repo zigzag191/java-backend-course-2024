@@ -60,6 +60,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    @Transactional
     public List<Link> listAllTrackedLinks(long tgChatId) {
         var chat = tgChatRepository.findById(tgChatId).orElseThrow(TgChatDoesNotExistException::new);
         return linkRepository.findAllTrackedLinks(chat);

@@ -21,8 +21,12 @@ public class LinkUpdateScheduler {
     @Scheduled(fixedDelayString = "#{@scheduler.interval}")
     public void update() {
         log.info("updating links");
-        int updated = updateLinks();
-        log.info("done updating links. links updated: {}", updated);
+        try {
+            int updated = updateLinks();
+            log.info("done updating links. links updated: {}", updated);
+        } catch (Exception ex) {
+            log.error("unhandled exception when updating links: {}", ex.getMessage());
+        }
     }
 
     private int updateLinks() {
@@ -37,6 +41,8 @@ public class LinkUpdateScheduler {
             }
             if (!linkIsUpdated) {
                 log.warn("link was not updated: {}", link.getUrl());
+            } else {
+                ++updated;
             }
         }
         return updated;
