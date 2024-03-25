@@ -1,8 +1,8 @@
 package edu.java.scrapper.client;
 
+import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
-import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
