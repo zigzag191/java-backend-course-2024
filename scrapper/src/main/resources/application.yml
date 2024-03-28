@@ -1,7 +1,7 @@
 app:
   scheduler:
     enable: true
-    interval: 10s
+    interval: 1000s
     force-check-delay: 10s
   stack-overflow-base-url: https://api.stackexchange.com
   github-base-url: https://api.github.com
@@ -10,6 +10,12 @@ app:
 spring:
   application:
     name: scrapper
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+  datasource:
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/scrapper
 
 springdoc:
   swagger-ui:

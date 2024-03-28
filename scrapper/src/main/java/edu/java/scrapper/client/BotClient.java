@@ -13,19 +13,19 @@ import reactor.core.publisher.Mono;
 
 public class BotClient {
 
-    public final WebClient webClient;
+    private final WebClient webClient;
 
     public BotClient(WebClient webClient) {
         this.webClient = webClient;
     }
 
-    public void sendLinkUpdate(long id, String link, String description, List<Long> tgChatIds) {
+    public void sendLinkUpdate(long id, URI link, String description, List<Long> tgChatIds) {
         if (link == null || description == null || tgChatIds == null) {
             throw new IllegalArgumentException("link, description and thChatIds params cannot be null");
         }
         webClient.post()
             .uri("/updates")
-            .bodyValue(new LinkUpdateRequest(id, URI.create(link), description, tgChatIds))
+            .bodyValue(new LinkUpdateRequest(id, link, description, tgChatIds))
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
