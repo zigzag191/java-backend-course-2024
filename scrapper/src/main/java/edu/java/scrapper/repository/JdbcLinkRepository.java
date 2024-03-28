@@ -4,21 +4,20 @@ import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.LinkType;
 import edu.java.scrapper.domain.model.TgChat;
 import java.net.URI;
-import java.sql.Statement;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import javax.sql.DataSource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 @Log4j2
 @Repository
-@RequiredArgsConstructor
 @SuppressWarnings("MultipleStringLiterals")
 public class JdbcLinkRepository {
 
@@ -31,7 +30,6 @@ public class JdbcLinkRepository {
         return link;
     };
 
-    public static final String ALL_QUERY = "INSERT INTO link (url, type, last_polled) VALUES (?, ?, ?)";
     public static final String FIND_ALL_QUERY = "SELECT * FROM link";
     public static final String FIND_BY_URL_QUERY = "SELECT * FROM link WHERE url = ?";
     public static final String FIND_LONGEST_NOT_POLLED_QUERY = "SELECT * FROM link ORDER BY last_polled LIMIT (?)";
@@ -45,21 +43,25 @@ public class JdbcLinkRepository {
         """;
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert insert;
+
+    public JdbcLinkRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.insert = new SimpleJdbcInsert(dataSource)
+            .withTableName("link")
+            .usingColumns("url", "type", "last_polled")
+            .withoutTableColumnMetaDataAccess()
+            .usingGeneratedKeyColumns("link_id");
+    }
 
     @SuppressWarnings("MagicNumber")
     public Link add(Link link) {
-        var keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            var ps = connection.prepareStatement(
-                ALL_QUERY,
-                Statement.RETURN_GENERATED_KEYS
-            );
-            ps.setString(1, link.getUrl().toString());
-            ps.setString(2, link.getType().name());
-            ps.setObject(3, link.getLastPolled());
-            return ps;
-        }, keyHolder);
-        link.setLinkId(((Integer) keyHolder.getKeyList().getFirst().get("link_id")).longValue());
+        var id = insert.executeAndReturnKey(Map.of(
+            "url", link.getUrl().toString(),
+            "type", link.getType().name(),
+            "last_polled", link.getLastPolled()
+        )).longValue();
+        link.setLinkId(id);
         return link;
     }
 
