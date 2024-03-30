@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 
-@SpringBootTest(properties = {"app.scheduler.enable=false", "app.create-all-services=true"})
+@SpringBootTest(properties = {"app.scheduler.enable=false"})
 @TestPropertySource(locations = "classpath:application.yml")
 public abstract class RepositoryTest extends IntegrationTest {
 

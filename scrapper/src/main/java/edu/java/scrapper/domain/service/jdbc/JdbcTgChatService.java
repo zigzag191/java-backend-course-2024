@@ -8,12 +8,8 @@ import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 
-@Service
-@ConditionalOnProperty(prefix = "app", name = "create-all-services", havingValue = "true")
 @RequiredArgsConstructor
 public class JdbcTgChatService implements TgChatService {
 

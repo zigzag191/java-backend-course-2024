@@ -11,12 +11,8 @@ import edu.java.scrapper.repository.jpa.JpaLinkRepository;
 import edu.java.scrapper.repository.jpa.JpaTgChatRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@ConditionalOnProperty(prefix = "app", name = "create-all-services", havingValue = "true")
 @RequiredArgsConstructor
 public class JpaTgChatService implements TgChatService {
 
