@@ -27,13 +27,16 @@ public class SimpleIntegrationTest extends IntegrationTest {
     @Test
     void schemaShouldBeCreatedCorrectly() {
         assertThatNoException().isThrownBy(() -> {
-            jdbcTemplate.update("DELETE FROM tg_chat");
             jdbcTemplate.update("INSERT INTO tg_chat VALUES (123)");
             jdbcTemplate.update(
                 "INSERT INTO link (url, type, last_polled) VALUES ('http://example.com', 'GITHUB_REPOSITORY', ?)",
                 OffsetDateTime.now()
             );
             jdbcTemplate.update("INSERT INTO track_info VALUES ((SELECT link_id FROM link LIMIT(1)), 123)");
+
+            jdbcTemplate.update("DELETE FROM track_info");
+            jdbcTemplate.update("DELETE FROM tg_chat");
+            jdbcTemplate.update("DELETE FROM link");
         });
     }
 

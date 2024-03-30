@@ -7,6 +7,8 @@ import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.model.TrackInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -21,6 +23,8 @@ public class JdbcLinkRepositoryTest extends RepositoryTest {
     static final OffsetDateTime ZERO_TIMESTAMP = OffsetDateTime.ofInstant(Instant.ofEpochSecond(0), ZoneId.of("UTC"));
 
     @Test
+    @Transactional
+    @Rollback
     void linkShouldBeAddedCorrectly() {
         var url = URI.create("http://example.com");
         var addedLink = linkRepository.add(new Link(url, LinkType.GITHUB_REPOSITORY, ZERO_TIMESTAMP));
@@ -32,6 +36,8 @@ public class JdbcLinkRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void addingDuplicateUrlShouldThrow() {
         var link = new Link(URI.create("http://example.com"), LinkType.GITHUB_REPOSITORY, ZERO_TIMESTAMP);
         linkRepository.add(link);
@@ -40,6 +46,8 @@ public class JdbcLinkRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void allLinkShouldBeFound() {
         for (int i = 0; i < 10; ++i) {
             linkRepository.add(new Link(
@@ -63,6 +71,8 @@ public class JdbcLinkRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void linkShouldBeRemovedCorrectly() {
         var link = new Link(URI.create("http://example.com"), LinkType.GITHUB_REPOSITORY, ZERO_TIMESTAMP);
         linkRepository.add(link);
@@ -72,6 +82,8 @@ public class JdbcLinkRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void trackedLinksShouldBeFoundCorrectly() {
         var chat = new TgChat(123L);
         tgChatRepository.add(chat);

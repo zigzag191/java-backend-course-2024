@@ -10,6 +10,8 @@ import edu.java.scrapper.domain.service.exception.LinkIsNotTrackedException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -33,6 +35,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void linkShouldBeTrackedCorrectly() {
         long id = TEST_CHAT_ID;
         tgChatRepository.add(new TgChat(id));
@@ -47,6 +51,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void trackingSameLinkShouldThrow() {
         long id = TEST_CHAT_ID;
         tgChatRepository.add(new TgChat(id));
@@ -57,6 +63,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void linkShouldBeUntrackedCorrectly() {
         var chat = tgChatRepository.add(new TgChat(TEST_CHAT_ID));
 
@@ -75,6 +83,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void removingLinkThatWasNotTrackedShouldThrow() {
         long id = TEST_CHAT_ID;
         tgChatRepository.add(new TgChat(id));
@@ -83,6 +93,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void allTrackedLinksShouldBeFoundCorrectly() {
         var chat = tgChatRepository.add(new TgChat(TEST_CHAT_ID));
 
@@ -102,6 +114,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void lastPolledShouldBeUpdatedCorrectly() {
         tgChatRepository.add(new TgChat(TEST_CHAT_ID));
         var link = linkService.add(TEST_CHAT_ID, TEST_URI);
@@ -117,6 +131,8 @@ public abstract class LinkServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void longestNotPolledShouldBeFoundCorrectly() {
         var chat = tgChatRepository.add(new TgChat(TEST_CHAT_ID));
 

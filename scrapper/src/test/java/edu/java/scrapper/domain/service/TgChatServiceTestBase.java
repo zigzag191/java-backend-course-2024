@@ -10,6 +10,8 @@ import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +30,8 @@ public abstract class TgChatServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void chatShouldBeRegisteredCorrectly() {
         tgChatService.register(TEST_CHAT_ID);
         var allChats = tgChatRepository.findAll();
@@ -36,6 +40,8 @@ public abstract class TgChatServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void duplicateChatRegistrationShouldThrow() {
         tgChatService.register(TEST_CHAT_ID);
         assertThatExceptionOfType(TgChatAlreadyExistsException.class)
@@ -43,6 +49,8 @@ public abstract class TgChatServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void chatShouldBeUnregisteredCorrectly() {
         tgChatRepository.add(new TgChat(TEST_CHAT_ID));
         tgChatService.unregister(TEST_CHAT_ID);
@@ -50,12 +58,16 @@ public abstract class TgChatServiceTestBase extends RepositoryTest {
     }
 
     @Test
+    @Transactional
+    @Rollback
     void unregisteringNotExistentChatShouldThrow() {
         assertThatExceptionOfType(TgChatDoesNotExistException.class)
             .isThrownBy(() -> tgChatService.unregister(TEST_CHAT_ID));
     }
 
     @Test
+    @Transactional
+    @Rollback
     void allTrackingChatsShouldBeFoundCorrectly() {
         var link = linkRepository.add(new Link(
             URI.create("https://example.com"),
