@@ -16,11 +16,10 @@ public abstract class RepositoryTest extends IntegrationTest {
     @Autowired protected JdbcLinkRepository linkRepository;
     @Autowired protected JdbcTgChatRepository tgChatRepository;
     @Autowired protected JdbcTrackInfoRepository trackInfoRepository;
-
     @Autowired protected JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    void cleanLinkTable() {
+    void clearTables() {
         jdbcTemplate.update("DELETE FROM track_info");
         jdbcTemplate.update("DELETE FROM link");
         jdbcTemplate.update("DELETE FROM tg_chat");
