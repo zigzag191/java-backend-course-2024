@@ -6,8 +6,6 @@ import edu.java.scrapper.domain.model.LinkType;
 import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.model.TrackInfo;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
@@ -17,8 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JdbcTgChatRepositoryTest extends RepositoryTest {
 
     @Test
-    @Transactional
-    @Rollback
     void chatShouldBeRegisteredCorrectly() {
         long id = 123;
         tgChatRepository.add(new TgChat(id));
@@ -26,8 +22,6 @@ public class JdbcTgChatRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void chatShouldBeRemovedCorrectly() {
         long id = 123;
         tgChatRepository.add(new TgChat(id));
@@ -35,8 +29,6 @@ public class JdbcTgChatRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void allChatsShouldBeFoundCorrectly() {
         for (int i = 0; i < 10; ++i) {
             tgChatRepository.add(new TgChat(i + 1L));
@@ -52,8 +44,6 @@ public class JdbcTgChatRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @Transactional
-    @Rollback
     void trackingChatsShouldBeFoundCorrectly() {
         var chat1 = tgChatRepository.add(new TgChat(1L));
         tgChatRepository.add(new TgChat(2L));
