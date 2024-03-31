@@ -1,5 +1,6 @@
 package edu.java.scrapper.client;
 
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
@@ -14,15 +15,20 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class GitHubClient {
 
     private static final Duration DEFAULT_RATE_LIMIT_TIMEOUT = Duration.ofMinutes(5);
 
     private final WebClient webClient;
+    private final Retry retryPolicy;
 
-    public GitHubClient(WebClient webClient) {
+    public GitHubClient(WebClient webClient, CustomRetrySpecBuilder builder) {
         this.webClient = webClient;
+        this.retryPolicy = builder
+            .withStatusCodeFilter(HttpStatusCode::is5xxServerError)
+            .build();
     }
 
     public List<GitHubActivityResponse> getPastDayActivities(String owner, String repo) {
@@ -38,6 +44,7 @@ public class GitHubClient {
             .retrieve()
             .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
             .toEntity(new ParameterizedTypeReference<List<GitHubActivityResponse>>() {})
+            .retryWhen(retryPolicy)
             .block();
 
         if (response == null) {
@@ -51,12 +58,12 @@ public class GitHubClient {
         var statusCode = response.statusCode();
         if (isRateLimitTimeOut(statusCode)) {
             var timeoutReset = getRateLimitTimeOutResetTime(response);
-            return Mono.error(new ApiTimeoutException(timeoutReset));
+            return Mono.error(new ApiTimeoutException(statusCode, timeoutReset));
         }
         return response
             .bodyToMono(String.class)
             .switchIfEmpty(Mono.just(""))
-            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(statusCode.value(), error)));
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(statusCode, error)));
     }
 
     private boolean isRateLimitTimeOut(HttpStatusCode statusCode) {

@@ -2,13 +2,16 @@ package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.dto.ApiErrorResponse;
 import edu.java.common.dto.linkupdate.StackoverflowQuestionUpdateInfo;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
@@ -40,7 +43,9 @@ public class BotClientTest {
     @BeforeAll
     static void createClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
-        client = new BotClient(webClient);
+        client = new BotClient(webClient, new CustomRetrySpecBuilder.Exponential()
+            .withMaxReties(0)
+            .withStep(Duration.ofSeconds(1)));
     }
 
     @Test

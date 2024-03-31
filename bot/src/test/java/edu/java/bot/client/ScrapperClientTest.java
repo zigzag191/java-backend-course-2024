@@ -2,6 +2,7 @@ package edu.java.bot.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.dto.LinkResponse;
 import edu.java.common.dto.ListLinksResponse;
 import edu.java.common.dto.SupportedResourcesResponse;
@@ -30,7 +31,7 @@ public class ScrapperClientTest {
     @BeforeAll
     static void initClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
-        client = new ScrapperClient(webClient);
+        client = new ScrapperClient(webClient, new CustomRetrySpecBuilder.Constant());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.common.client.BackoffStrategy;
 import edu.java.scrapper.configuration.database.AccessType;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
@@ -11,12 +12,21 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfig(
     @NotNull @Bean Scheduler scheduler,
-    String stackOverflowBaseUrl,
-    String githubBaseUrl,
-    @NotNull String botBaseUrl,
-    @NotNull AccessType databaseAccessType,
-    boolean createAllServices
+    @NotNull ClientConfig stackOverflowClient,
+    @NotNull ClientConfig githubClient,
+    @NotNull ClientConfig botClient,
+    @NotNull AccessType databaseAccessType
 ) {
+
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
+
+    public record ClientConfig(
+        String baseUrl,
+        int maxRetries,
+        Duration retryStep,
+        BackoffStrategy backoffStrategy
+    ) {
+    }
+
 }

@@ -2,6 +2,7 @@ package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.List;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
@@ -31,7 +33,7 @@ public class StackOverflowClientTest {
         var webClient = WebClient.builder()
             .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
             .build();
-        client = new StackOverflowClient(webClient);
+        client = new StackOverflowClient(webClient, new CustomRetrySpecBuilder.Constant());
     }
 
     @Test
@@ -70,7 +72,7 @@ public class StackOverflowClientTest {
         assertThatExceptionOfType(UnsuccessfulRequestException.class)
             .isThrownBy(() -> client.getNewActivities(123, zeroTimeStamp))
             .extracting(UnsuccessfulRequestException::getStatusCode, UnsuccessfulRequestException::getResponseBody)
-            .contains(500, "server error");
+            .contains(HttpStatus.INTERNAL_SERVER_ERROR, "server error");
     }
 
 }

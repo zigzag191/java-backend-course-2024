@@ -1,6 +1,7 @@
 package edu.java.bot.client;
 
 import edu.java.bot.client.exception.BadScrapperApiRequestException;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.dto.AddLinkRequest;
 import edu.java.common.dto.ApiErrorResponse;
 import edu.java.common.dto.LinkResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class ScrapperClient {
 
@@ -24,9 +26,14 @@ public class ScrapperClient {
     public static final String NULL_LINK_EXCEPTION_MESSAGE = "link param cannot be null";
 
     private final WebClient webClient;
+    private final Retry retryPolicy;
 
-    public ScrapperClient(WebClient webClient) {
+    public ScrapperClient(WebClient webClient, CustomRetrySpecBuilder builder) {
         this.webClient = webClient;
+        retryPolicy = builder
+            .withStatusCodeFilter(statusCode ->
+                statusCode.is5xxServerError() && !statusCode.equals(HttpStatus.NOT_IMPLEMENTED))
+            .build();
     }
 
     public void registerChat(long chatId) {
@@ -35,6 +42,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -44,6 +52,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -54,6 +63,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(ListLinksResponse.class)
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -68,6 +78,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(LinkResponse.class)
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -82,6 +93,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(LinkResponse.class)
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -91,6 +103,7 @@ public class ScrapperClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .bodyToMono(SupportedResourcesResponse.class)
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -100,14 +113,14 @@ public class ScrapperClient {
             return response
                 .bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> Mono.error(new BadScrapperApiRequestException(
-                    status.value(),
+                    status,
                     error
                 )));
         }
         return response
             .bodyToMono(String.class)
             .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
-                status.value(),
+                status,
                 error
             )));
     }

@@ -1,16 +1,17 @@
 package edu.java.bot.client.exception;
 
 import edu.java.common.dto.ApiErrorResponse;
+import edu.java.common.exception.HttpRequestException;
 import lombok.Getter;
+import org.springframework.http.HttpStatusCode;
 
 @Getter
-public class BadScrapperApiRequestException extends RuntimeException {
+public class BadScrapperApiRequestException extends HttpRequestException {
 
-    private final int statusCode;
     private final ApiErrorResponse responseBody;
 
-    public BadScrapperApiRequestException(int statusCode, ApiErrorResponse responseBody) {
-        this.statusCode = statusCode;
+    public BadScrapperApiRequestException(HttpStatusCode statusCode, ApiErrorResponse responseBody) {
+        super(statusCode);
         this.responseBody = responseBody;
     }
 

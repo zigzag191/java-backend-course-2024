@@ -1,6 +1,7 @@
 package edu.java.bot.configuration;
 
 import edu.java.bot.client.ScrapperClient;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -9,13 +10,24 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class ClientConfig {
 
     @Bean
-    public ScrapperClient scrapperClient(WebClient scrapperWebClient) {
-        return new ScrapperClient(scrapperWebClient);
+    public ScrapperClient scrapperClient(WebClient scrapperWebClient, ApplicationConfig config) {
+        return new ScrapperClient(scrapperWebClient, createRetrySpecBuilder(config.scrapperClient()));
     }
 
     @Bean
     public WebClient scrapperWebClient(WebClient.Builder webClientBuilder, ApplicationConfig config) {
-        return webClientBuilder.baseUrl(config.scrapperBaseUrl()).build();
+        return webClientBuilder.baseUrl(config.scrapperClient().baseUrl()).build();
+    }
+
+    private CustomRetrySpecBuilder createRetrySpecBuilder(ApplicationConfig.ClientConfig config) {
+        var builder = switch (config.backoffStrategy()) {
+            case LINEAR -> new CustomRetrySpecBuilder.Linear();
+            case EXPONENTIAL -> new CustomRetrySpecBuilder.Exponential();
+            case CONSTANT -> new CustomRetrySpecBuilder.Constant();
+        };
+        return builder
+            .withMaxReties(config.maxRetries())
+            .withStep(config.retryStep());
     }
 
 }
