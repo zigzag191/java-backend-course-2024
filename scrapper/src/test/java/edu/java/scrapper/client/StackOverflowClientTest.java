@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -33,7 +34,9 @@ public class StackOverflowClientTest {
         var webClient = WebClient.builder()
             .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
             .build();
-        client = new StackOverflowClient(webClient, new CustomRetrySpecBuilder.Constant());
+        client = new StackOverflowClient(webClient, new CustomRetrySpecBuilder.Linear()
+            .withMaxReties(3)
+            .withStep(Duration.ofSeconds(1)));
     }
 
     @Test

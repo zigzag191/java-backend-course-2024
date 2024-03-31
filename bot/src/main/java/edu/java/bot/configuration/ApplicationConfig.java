@@ -1,16 +1,17 @@
 package edu.java.bot.configuration;
 
 import edu.java.common.client.BackoffStrategy;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
-import java.time.Duration;
 
 @Validated
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfig(
-    @NotEmpty String telegramToken,
-    @NotEmpty ClientConfig scrapperClient
+    @NotNull String telegramToken,
+    @NotNull ClientConfig scrapperClient,
+    @NotNull RateLimitConfig rateLimitConfig
 ) {
 
     public record ClientConfig(
@@ -18,6 +19,13 @@ public record ApplicationConfig(
         int maxRetries,
         Duration retryStep,
         BackoffStrategy backoffStrategy
+    ) {
+    }
+
+    public record RateLimitConfig(
+        Duration cacheExpirationDuration,
+        int bucketCapacity,
+        Duration refillInterval
     ) {
     }
 

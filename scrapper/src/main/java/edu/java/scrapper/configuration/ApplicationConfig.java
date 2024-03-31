@@ -15,7 +15,8 @@ public record ApplicationConfig(
     @NotNull ClientConfig stackOverflowClient,
     @NotNull ClientConfig githubClient,
     @NotNull ClientConfig botClient,
-    @NotNull AccessType databaseAccessType
+    @NotNull AccessType databaseAccessType,
+    @NotNull RateLimitConfig rateLimitConfig
 ) {
 
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
@@ -26,6 +27,13 @@ public record ApplicationConfig(
         int maxRetries,
         Duration retryStep,
         BackoffStrategy backoffStrategy
+    ) {
+    }
+
+    public record RateLimitConfig(
+        Duration cacheExpirationDuration,
+        int bucketCapacity,
+        Duration refillInterval
     ) {
     }
 

@@ -1,10 +1,10 @@
 package edu.java.common.client;
 
 import edu.java.common.exception.HttpRequestException;
-import org.springframework.http.HttpStatusCode;
-import reactor.util.retry.Retry;
 import java.time.Duration;
 import java.util.function.Predicate;
+import org.springframework.http.HttpStatusCode;
+import reactor.util.retry.Retry;
 
 public abstract class CustomRetrySpecBuilder {
 

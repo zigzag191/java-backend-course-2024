@@ -11,7 +11,6 @@ import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.WebClient;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.notFound;
@@ -44,7 +43,7 @@ public class BotClientTest {
     static void createClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
         client = new BotClient(webClient, new CustomRetrySpecBuilder.Exponential()
-            .withMaxReties(0)
+            .withMaxReties(3)
             .withStep(Duration.ofSeconds(1)));
     }
 

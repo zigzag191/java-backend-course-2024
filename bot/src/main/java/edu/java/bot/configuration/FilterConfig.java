@@ -1,4 +1,4 @@
-package edu.java.scrapper.configuration;
+package edu.java.bot.configuration;
 
 import edu.java.common.filter.ThrottlingFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

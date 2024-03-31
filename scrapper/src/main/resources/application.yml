@@ -1,6 +1,6 @@
 app:
   scheduler:
-    enable: false
+    enable: true
     interval: 30s
     force-check-delay: 10s
   stack-overflow-client:
@@ -19,6 +19,10 @@ app:
     retry-step: 2s
     backoff-strategy: linear
   database-access-type: jpa
+  rate-limit-config:
+    bucket-capacity: 60
+    cache-expiration-duration: 10m
+    refill-interval: 1m
 
 spring:
   application:

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -52,7 +53,9 @@ public class GitHubClientTest {
         var webClient = WebClient.builder()
             .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
             .build();
-        client = new GitHubClient(webClient, new CustomRetrySpecBuilder.Constant());
+        client = new GitHubClient(webClient, new CustomRetrySpecBuilder.Constant()
+            .withMaxReties(3)
+            .withStep(Duration.ofSeconds(1)));
     }
 
     @Test

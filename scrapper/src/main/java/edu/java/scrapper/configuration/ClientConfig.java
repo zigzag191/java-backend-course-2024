@@ -33,7 +33,10 @@ public class ClientConfig {
 
     @Bean
     public WebClient stackOverflowWebClient(WebClient.Builder webClientBuilder, ApplicationConfig config) {
-        var baseUrl = Objects.requireNonNullElse(config.stackOverflowClient().baseUrl(), STACKOVERFLOW_DEFAULT_BASE_URL);
+        var baseUrl = Objects.requireNonNullElse(
+            config.stackOverflowClient().baseUrl(),
+            STACKOVERFLOW_DEFAULT_BASE_URL
+        );
         return webClientBuilder.baseUrl(baseUrl).build();
     }
 

@@ -1,7 +1,7 @@
 package edu.java.scrapper.client.exception;
 
-import java.time.OffsetDateTime;
 import edu.java.common.exception.HttpRequestException;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
