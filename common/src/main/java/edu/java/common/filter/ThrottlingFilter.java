@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
@@ -32,7 +33,7 @@ public class ThrottlingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
         throws IOException, ServletException {
-        var ip = servletRequest.getRemoteAddr();
+        var ip = extractIpFromRequest((HttpServletRequest) servletRequest);
         var bucket = cache.get(ip, key -> createBucket());
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(servletRequest, servletResponse);
@@ -42,6 +43,14 @@ public class ThrottlingFilter implements Filter {
             httpResponse.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             httpResponse.getWriter().append("Too many requests");
         }
+    }
+
+    private String extractIpFromRequest(HttpServletRequest servletRequest) {
+        var ip = servletRequest.getHeader("X-FORWARDED-FOR");
+        if (ip == null) {
+            return servletRequest.getRemoteAddr();
+        }
+        return ip.contains(",") ? ip.split(",")[0] : ip;
     }
 
     private Bucket createBucket() {
