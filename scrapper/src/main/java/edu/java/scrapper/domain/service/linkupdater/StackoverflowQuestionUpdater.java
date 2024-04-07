@@ -2,13 +2,14 @@ package edu.java.scrapper.domain.service.linkupdater;
 
 import edu.java.common.dto.linkupdate.StackoverflowQuestionUpdateInfo;
 import edu.java.common.exception.UnsuccessfulRequestException;
-import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.service.LinkService;
 import edu.java.scrapper.domain.service.TgChatService;
+import edu.java.scrapper.domain.service.UpdateNotificationService;
+import edu.java.scrapper.domain.service.exception.KafkaException;
 import edu.java.scrapper.domain.service.exception.UnsupportedResourceException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -24,7 +25,7 @@ public class StackoverflowQuestionUpdater implements LinkUpdater {
     private static final URI SUPPORTED_RESOURCE = URI.create("https://stackoverflow.com/questions/questionId");
     public static final int QUESTION_PATH_LENGTH = 3;
 
-    private final BotClient botClient;
+    private final UpdateNotificationService updateNotificationService;
     private final StackOverflowClient stackOverflowClient;
     private final TgChatService tgChatService;
     private final LinkService linkService;
@@ -60,7 +61,7 @@ public class StackoverflowQuestionUpdater implements LinkUpdater {
                 activities.comments().items().stream().map(comment -> URI.create(comment.link())).toList(),
                 activities.answers().items().stream().map(answer -> URI.create(answer.link())).toList()
             );
-            botClient.sendLinkUpdate(
+            updateNotificationService.send(
                 link.getLinkId(),
                 link.getUrl(),
                 "new question activity",
@@ -77,6 +78,9 @@ public class StackoverflowQuestionUpdater implements LinkUpdater {
             return false;
         } catch (BadBotApiRequestException ex) {
             log.error("bad bot API request: [{}] {}", ex.getStatusCode(), ex.getResponseBody());
+            return false;
+        } catch (KafkaException ex) {
+            log.error("unable to send message to kafka: {}", ex.getMessage());
             return false;
         }
     }

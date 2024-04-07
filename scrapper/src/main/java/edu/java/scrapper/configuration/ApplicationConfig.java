@@ -16,7 +16,9 @@ public record ApplicationConfig(
     @NotNull ClientConfig githubClient,
     @NotNull ClientConfig botClient,
     @NotNull AccessType databaseAccessType,
-    @NotNull RateLimitConfig rateLimitConfig
+    @NotNull RateLimitConfig rateLimitConfig,
+    @NotNull KafkaProducerConfig kafkaProducerConfig,
+    boolean useQueue
 ) {
 
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
@@ -34,6 +36,14 @@ public record ApplicationConfig(
         Duration cacheExpirationDuration,
         int bucketCapacity,
         Duration refillInterval
+    ) {
+    }
+
+    public record KafkaProducerConfig(
+        String bootstrapServers,
+        int lingerMs,
+        String updatesTopicName,
+        String acknowledgments
     ) {
     }
 
