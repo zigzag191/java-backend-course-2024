@@ -14,7 +14,7 @@ public class KafkaUpdateQueueListener {
 
     private final UserService userService;
 
-    @KafkaListener(topics = "#{@kafkaConsumerConfig.updatesTopicName}", errorHandler = "dlqExceptionHandler")
+    @KafkaListener(topics = "#{@kafkaConsumerConfig.updatesTopicName}")
     public void listen(LinkUpdateRequest update) {
         log.info("Updating links: {}", update);
         userService.sendUpdates(update.url(), update.tgChatIds(), update.linkUpdateInfo());

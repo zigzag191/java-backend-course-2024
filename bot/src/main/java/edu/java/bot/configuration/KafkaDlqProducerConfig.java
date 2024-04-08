@@ -2,6 +2,7 @@ package edu.java.bot.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -13,7 +14,9 @@ import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.listener.KafkaListenerErrorHandler;
+import org.springframework.kafka.listener.CommonErrorHandler;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 @Configuration
 @Log4j2
@@ -51,12 +54,15 @@ public class KafkaDlqProducerConfig {
     }
 
     @Bean
-    public KafkaListenerErrorHandler dlqExceptionHandler(KafkaTemplate<Integer, String> dlqKafkaTemplate) {
-        return (msg, ex) -> {
-            log.error("Kafka listener error: {}", ex.getMessage());
-            dlqKafkaTemplate.send(msg);
-            return msg;
-        };
+    public CommonErrorHandler dlqExceptionHandler(KafkaTemplate<Integer, String> dlqKafkaTemplate) {
+        return new DefaultErrorHandler((r, e) -> {
+            log.error("Kafka listener error: {}", e.getMessage());
+            try {
+                dlqKafkaTemplate.sendDefault((String) r.value()).get();
+            } catch (InterruptedException | ExecutionException ex) {
+                log.error("Unable to send message to dlq: {}", ex.getMessage());
+            }
+        }, new FixedBackOff(0L, 0L));
     }
 
 }
