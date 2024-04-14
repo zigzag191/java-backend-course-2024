@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Log4j2
 public class ControllerAdvice {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleException(Exception ex) {
+        return createErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, "Unhandled exception was encountered");
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         return createErrorResponse(ex, HttpStatus.BAD_REQUEST, "Message is not readable");

@@ -2,11 +2,13 @@ package edu.java.scrapper.repository;
 
 import edu.java.scrapper.domain.model.TrackInfo;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class JdbcTrackInfoRepository {
 
     public static final RowMapper<TrackInfo> TRACK_INFO_ROW_MAPPER = (resultSet, rowNumber) -> {
@@ -16,15 +18,20 @@ public class JdbcTrackInfoRepository {
         return trackInfo;
     };
 
-    private final JdbcTemplate jdbcTemplate;
+    public static final String ADD_QUERY = "INSERT INTO track_info VALUES (?, ?)";
+    public static final String REMOVE_QUERY = "DELETE FROM track_info WHERE link_id = ? AND tg_chat = ?";
+    public static final String FIND_ALL_QUERY = """
+        SELECT *
+        FROM tg_chat AS t
+            INNER JOIN track_info AS i ON t.chat_id = i.tg_chat
+            INNER JOIN link AS l ON l.link_id = i.link_id
+        """;
 
-    public JdbcTrackInfoRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     public void add(TrackInfo trackInfo) {
         jdbcTemplate.update(
-            "INSERT INTO track_info VALUES (?, ?)",
+            ADD_QUERY,
             trackInfo.getLink().getLinkId(),
             trackInfo.getTgChat().getChatId()
         );
@@ -32,7 +39,7 @@ public class JdbcTrackInfoRepository {
 
     public boolean remove(TrackInfo trackInfo) {
         int deleted = jdbcTemplate.update(
-            "DELETE FROM track_info WHERE link_id = ? AND tg_chat = ?",
+            REMOVE_QUERY,
             trackInfo.getLink().getLinkId(),
             trackInfo.getTgChat().getChatId()
         );
@@ -41,10 +48,7 @@ public class JdbcTrackInfoRepository {
 
     public List<TrackInfo> findAll() {
         return jdbcTemplate.query(
-            "SELECT * "
-                + "FROM tg_chat AS t "
-                + "INNER JOIN track_info AS i ON t.chat_id = i.tg_chat "
-                + "INNER JOIN link AS l ON l.link_id = i.link_id",
+            FIND_ALL_QUERY,
             TRACK_INFO_ROW_MAPPER
         );
     }
