@@ -14,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import static edu.java.scrapper.domain.jooq.Tables.TG_CHAT;
 import static edu.java.scrapper.domain.jooq.Tables.TRACK_INFO;
 import static edu.java.scrapper.domain.jooq.tables.Link.LINK;
 
-@Service
 @RequiredArgsConstructor
 public class JooqLinkService implements LinkService {
 

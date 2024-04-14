@@ -1,8 +1,8 @@
 package edu.java.scrapper;
 
-import edu.java.scrapper.repository.JdbcLinkRepository;
-import edu.java.scrapper.repository.JdbcTgChatRepository;
-import edu.java.scrapper.repository.JdbcTrackInfoRepository;
+import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.jdbc.JdbcTrackInfoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

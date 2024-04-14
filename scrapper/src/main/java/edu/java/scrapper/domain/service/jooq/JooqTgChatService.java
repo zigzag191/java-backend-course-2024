@@ -9,12 +9,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Service;
 import static edu.java.scrapper.domain.jooq.Tables.LINK;
 import static edu.java.scrapper.domain.jooq.Tables.TG_CHAT;
 import static edu.java.scrapper.domain.jooq.Tables.TRACK_INFO;
 
-@Service
 @RequiredArgsConstructor
 public class JooqTgChatService implements TgChatService {
 
