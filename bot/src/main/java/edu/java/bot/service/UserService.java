@@ -19,4 +19,6 @@ public interface UserService {
 
     void sendUpdates(URI url, List<Long> chatIds, LinkUpdateInfo updateInfo);
 
+    List<URI> getSupportedResources();
+
 }
