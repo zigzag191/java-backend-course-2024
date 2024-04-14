@@ -7,7 +7,7 @@ CREATE TABLE track_info(
         ON UPDATE RESTRICT,
 
     tg_chat INTEGER REFERENCES tg_chat (chat_id)
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
         ON UPDATE RESTRICT,
 
     PRIMARY KEY (link_id, tg_chat)
