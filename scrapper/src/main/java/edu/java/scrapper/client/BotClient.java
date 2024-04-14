@@ -1,7 +1,8 @@
 package edu.java.scrapper.client;
 
 import edu.java.common.dto.ApiErrorResponse;
-import edu.java.common.dto.LinkUpdateRequest;
+import edu.java.common.dto.linkupdate.LinkUpdateInfo;
+import edu.java.common.dto.linkupdate.LinkUpdateRequest;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.net.URI;
@@ -13,19 +14,19 @@ import reactor.core.publisher.Mono;
 
 public class BotClient {
 
-    public final WebClient webClient;
+    private final WebClient webClient;
 
     public BotClient(WebClient webClient) {
         this.webClient = webClient;
     }
 
-    public void sendLinkUpdate(long id, String link, String description, List<Long> tgChatIds) {
+    public void sendLinkUpdate(long id, URI link, String description, List<Long> tgChatIds, LinkUpdateInfo info) {
         if (link == null || description == null || tgChatIds == null) {
             throw new IllegalArgumentException("link, description and thChatIds params cannot be null");
         }
         webClient.post()
             .uri("/updates")
-            .bodyValue(new LinkUpdateRequest(id, URI.create(link), description, tgChatIds))
+            .bodyValue(new LinkUpdateRequest(id, link, description, tgChatIds, info))
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
