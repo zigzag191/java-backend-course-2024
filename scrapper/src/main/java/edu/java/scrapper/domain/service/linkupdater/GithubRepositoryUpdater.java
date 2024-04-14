@@ -1,5 +1,6 @@
 package edu.java.scrapper.domain.service.linkupdater;
 
+import edu.java.common.dto.linkupdate.GithubRepoUpdateInfo;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GitHubClient;
@@ -79,13 +80,20 @@ public class GithubRepositoryUpdater implements LinkUpdater {
 
     private boolean sendUpdate(Link link, List<GitHubActivityResponse> activities) {
         try {
+            var updateInfo = new GithubRepoUpdateInfo(activities.stream()
+                .map(activity -> new GithubRepoUpdateInfo.Activity(
+                    mapActivity(activity.activityType()),
+                    activity.timestamp()
+                ))
+                .toList());
             botClient.sendLinkUpdate(
                 link.getLinkId(),
                 link.getUrl(),
                 "new repo activity",
                 tgChatService.findAllTrackingChats(link).stream()
                     .map(TgChat::getChatId)
-                    .toList()
+                    .toList(),
+                updateInfo
             );
             link.setLastPolled(OffsetDateTime.now());
             linkService.updateLastPolled(link);
@@ -99,6 +107,11 @@ public class GithubRepositoryUpdater implements LinkUpdater {
         }
     }
 
-    private record RepoInfo(String owner, String repo) {}
+    private GithubRepoUpdateInfo.ActivityType mapActivity(String activity) {
+        return GithubRepoUpdateInfo.ActivityType.valueOf(activity.toUpperCase());
+    }
+
+    private record RepoInfo(String owner, String repo) {
+    }
 
 }

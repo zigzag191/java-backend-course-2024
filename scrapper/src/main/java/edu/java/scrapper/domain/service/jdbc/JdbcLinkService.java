@@ -7,17 +7,15 @@ import edu.java.scrapper.domain.service.LinkValidator;
 import edu.java.scrapper.domain.service.exception.LinkIsAlreadyTrackedException;
 import edu.java.scrapper.domain.service.exception.LinkIsNotTrackedException;
 import edu.java.scrapper.domain.service.exception.TgChatDoesNotExistException;
-import edu.java.scrapper.repository.JdbcLinkRepository;
-import edu.java.scrapper.repository.JdbcTgChatRepository;
-import edu.java.scrapper.repository.JdbcTrackInfoRepository;
+import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.jdbc.JdbcTrackInfoRepository;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @RequiredArgsConstructor
 public class JdbcLinkService implements LinkService {
 

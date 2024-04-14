@@ -1,5 +1,6 @@
-package edu.java.scrapper.repository;
+package edu.java.scrapper.repository.jdbc;
 
+import edu.java.scrapper.RepositoryTest;
 import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.LinkType;
 import edu.java.scrapper.domain.model.TgChat;

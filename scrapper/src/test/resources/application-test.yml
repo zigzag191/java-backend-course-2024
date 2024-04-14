@@ -1,0 +1,15 @@
+app:
+  scheduler:
+    enable: false
+    interval: 1000s
+    force-check-delay: 10s
+  bot-base-url: http://localhost:8090
+
+spring:
+  application:
+    name: scrapper
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+
+logging:
+  config: classpath:log4j2-plain.xml

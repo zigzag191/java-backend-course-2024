@@ -1,5 +1,6 @@
 package edu.java.scrapper.domain.service.linkupdater;
 
+import edu.java.common.dto.linkupdate.StackoverflowQuestionUpdateInfo;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.StackOverflowClient;
@@ -55,13 +56,18 @@ public class StackoverflowQuestionUpdater implements LinkUpdater {
 
     private boolean sendUpdate(Link link, StackOverflowClient.Activities activities) {
         try {
+            var updateInfo = new StackoverflowQuestionUpdateInfo(
+                activities.comments().items().stream().map(comment -> URI.create(comment.link())).toList(),
+                activities.answers().items().stream().map(answer -> URI.create(answer.link())).toList()
+            );
             botClient.sendLinkUpdate(
                 link.getLinkId(),
                 link.getUrl(),
                 "new question activity",
                 tgChatService.findAllTrackingChats(link).stream()
                     .map(TgChat::getChatId)
-                    .toList()
+                    .toList(),
+                updateInfo
             );
             link.setLastPolled(OffsetDateTime.now());
             linkService.updateLastPolled(link);

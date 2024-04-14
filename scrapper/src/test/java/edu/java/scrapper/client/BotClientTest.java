@@ -3,6 +3,7 @@ package edu.java.scrapper.client;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.common.dto.ApiErrorResponse;
+import edu.java.common.dto.linkupdate.StackoverflowQuestionUpdateInfo;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.net.URI;
 import java.util.List;
@@ -48,14 +49,15 @@ public class BotClientTest {
             .withRequestBody(containing("\"id\":1"))
             .withRequestBody(containing("\"url\":\"http://example.com\""))
             .withRequestBody(containing("\"description\":\"test\""))
-            .withRequestBody(containing("\"tgChatIds\":[1,2,3]}"))
+            .withRequestBody(containing("\"tgChatIds\":[1,2,3]"))
             .willReturn(ok()));
 
         assertThatNoException().isThrownBy(() -> client.sendLinkUpdate(
             1,
             URI.create("http://example.com"),
             "test",
-            List.of(1L, 2L, 3L)
+            List.of(1L, 2L, 3L),
+            new StackoverflowQuestionUpdateInfo(List.of(), List.of())
         ));
     }
 
@@ -70,7 +72,7 @@ public class BotClientTest {
             new ApiErrorResponse("test-description", "404", "test-name", "test-message", List.of("a", "b", "c"));
 
         assertThatExceptionOfType(BadBotApiRequestException.class)
-            .isThrownBy(() -> client.sendLinkUpdate(0, URI.create(""), "", List.of()))
+            .isThrownBy(() -> client.sendLinkUpdate(0, URI.create(""), "", List.of(), null))
             .extracting(BadBotApiRequestException::getResponseBody)
             .isEqualTo(expectedResponse);
     }
