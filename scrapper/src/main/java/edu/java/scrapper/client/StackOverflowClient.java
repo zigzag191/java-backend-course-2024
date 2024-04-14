@@ -1,8 +1,8 @@
 package edu.java.scrapper.client;
 
+import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
-import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
 import java.time.OffsetDateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.ClientResponse;

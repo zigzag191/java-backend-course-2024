@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.client.StackOverflowClient;
 import java.util.Objects;
@@ -33,6 +34,16 @@ public class ClientConfig {
     public WebClient stackOverflowWebClient(WebClient.Builder webClientBuilder, ApplicationConfig config) {
         var baseUrl = Objects.requireNonNullElse(config.stackOverflowBaseUrl(), STACKOVERFLOW_DEFAULT_BASE_URL);
         return webClientBuilder.baseUrl(baseUrl).build();
+    }
+
+    @Bean
+    public BotClient botClient(WebClient botWebClient) {
+        return new BotClient(botWebClient);
+    }
+
+    @Bean
+    public WebClient botWebClient(WebClient.Builder webClientBuilder, ApplicationConfig config) {
+        return webClientBuilder.baseUrl(config.botBaseUrl()).build();
     }
 
 }

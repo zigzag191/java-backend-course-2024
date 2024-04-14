@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
-import edu.java.scrapper.client.exception.UnsuccessfulRequestException;
+import edu.java.common.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;

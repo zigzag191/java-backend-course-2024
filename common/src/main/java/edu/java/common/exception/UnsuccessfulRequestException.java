@@ -1,4 +1,4 @@
-package edu.java.scrapper.client.exception;
+package edu.java.common.exception;
 
 import lombok.Getter;
 

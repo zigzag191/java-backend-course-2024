@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.configuration.database.AccessType;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -11,7 +12,10 @@ import org.springframework.validation.annotation.Validated;
 public record ApplicationConfig(
     @NotNull @Bean Scheduler scheduler,
     String stackOverflowBaseUrl,
-    String githubBaseUrl
+    String githubBaseUrl,
+    @NotNull String botBaseUrl,
+    @NotNull AccessType databaseAccessType,
+    boolean createAllServices
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
