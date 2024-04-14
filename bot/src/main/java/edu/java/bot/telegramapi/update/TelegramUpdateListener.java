@@ -3,28 +3,23 @@ package edu.java.bot.telegramapi.update;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.metric.ProcessedTgMessagesMetric;
 import edu.java.bot.telegramapi.response.TelegramMessageSender;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
+@RequiredArgsConstructor
 public class TelegramUpdateListener {
 
     private final TelegramBot telegramBot;
     private final UpdateDispatcher updateDispatcher;
     private final TelegramMessageSender telegramMessageSender;
-
-    public TelegramUpdateListener(
-        TelegramBot telegramBot, UpdateDispatcher updateDispatcher,
-        TelegramMessageSender telegramMessageSender
-    ) {
-        this.telegramBot = telegramBot;
-        this.updateDispatcher = updateDispatcher;
-        this.telegramMessageSender = telegramMessageSender;
-    }
+    private final ProcessedTgMessagesMetric processedTgMessagesMetric;
 
     @PostConstruct
     public void startListeningForUpdates() {
@@ -46,6 +41,8 @@ public class TelegramUpdateListener {
                     result.description(),
                     result.errorCode()
                 );
+            } else {
+                processedTgMessagesMetric.increment();
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
