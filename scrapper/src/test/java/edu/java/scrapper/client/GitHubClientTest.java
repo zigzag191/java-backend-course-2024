@@ -55,7 +55,8 @@ public class GitHubClientTest {
             .build();
         client = new GitHubClient(webClient, new CustomRetrySpecBuilder.Constant()
             .withMaxReties(3)
-            .withStep(Duration.ofSeconds(1)));
+            .withStep(Duration.ofSeconds(1))
+            .build());
     }
 
     @Test

@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 
 @Configuration
 public class ClientConfig {
@@ -50,7 +51,7 @@ public class ClientConfig {
         return webClientBuilder.baseUrl(config.botClient().baseUrl()).build();
     }
 
-    private CustomRetrySpecBuilder createRetrySpecBuilder(ApplicationConfig.ClientConfig config) {
+    private Retry createRetrySpecBuilder(ApplicationConfig.ClientConfig config) {
         var builder = switch (config.backoffStrategy()) {
             case LINEAR -> new CustomRetrySpecBuilder.Linear();
             case EXPONENTIAL -> new CustomRetrySpecBuilder.Exponential();
@@ -58,7 +59,9 @@ public class ClientConfig {
         };
         return builder
             .withMaxReties(config.maxRetries())
-            .withStep(config.retryStep());
+            .withStep(config.retryStep())
+            .withStatusCodeFilter(code -> config.retryCodes().contains(code.value()))
+            .build();
     }
 
 }

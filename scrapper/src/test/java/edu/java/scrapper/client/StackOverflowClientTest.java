@@ -36,7 +36,8 @@ public class StackOverflowClientTest {
             .build();
         client = new StackOverflowClient(webClient, new CustomRetrySpecBuilder.Linear()
             .withMaxReties(3)
-            .withStep(Duration.ofSeconds(1)));
+            .withStep(Duration.ofSeconds(1))
+            .build());
     }
 
     @Test

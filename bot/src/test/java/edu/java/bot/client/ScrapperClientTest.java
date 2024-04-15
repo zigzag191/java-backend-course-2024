@@ -31,7 +31,7 @@ public class ScrapperClientTest {
     @BeforeAll
     static void initClient(WireMockRuntimeInfo wireMockRuntimeInfo) {
         var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
-        client = new ScrapperClient(webClient, new CustomRetrySpecBuilder.Constant());
+        client = new ScrapperClient(webClient, new CustomRetrySpecBuilder.Constant().build());
     }
 
     @Test

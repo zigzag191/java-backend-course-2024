@@ -1,7 +1,6 @@
 package edu.java.bot.client;
 
 import edu.java.bot.client.exception.BadScrapperApiRequestException;
-import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.dto.AddLinkRequest;
 import edu.java.common.dto.ApiErrorResponse;
 import edu.java.common.dto.LinkResponse;
@@ -10,6 +9,7 @@ import edu.java.common.dto.RemoveLinkRequest;
 import edu.java.common.dto.SupportedResourcesResponse;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import java.net.URI;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,6 +18,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class ScrapperClient {
 
     public static final String TG_CHAT_TEMPLATE_URL = "/tg-chat/{chatId}";
@@ -27,14 +28,6 @@ public class ScrapperClient {
 
     private final WebClient webClient;
     private final Retry retryPolicy;
-
-    public ScrapperClient(WebClient webClient, CustomRetrySpecBuilder builder) {
-        this.webClient = webClient;
-        retryPolicy = builder
-            .withStatusCodeFilter(statusCode ->
-                statusCode.is5xxServerError() && !statusCode.equals(HttpStatus.NOT_IMPLEMENTED))
-            .build();
-    }
 
     public void registerChat(long chatId) {
         webClient.post()

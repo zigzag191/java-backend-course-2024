@@ -1,6 +1,5 @@
 package edu.java.scrapper.client;
 
-import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
@@ -9,6 +8,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,19 +17,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class GitHubClient {
 
     private static final Duration DEFAULT_RATE_LIMIT_TIMEOUT = Duration.ofMinutes(5);
 
     private final WebClient webClient;
     private final Retry retryPolicy;
-
-    public GitHubClient(WebClient webClient, CustomRetrySpecBuilder builder) {
-        this.webClient = webClient;
-        this.retryPolicy = builder
-            .withStatusCodeFilter(HttpStatusCode::is5xxServerError)
-            .build();
-    }
 
     public List<GitHubActivityResponse> getPastDayActivities(String owner, String repo) {
         if (owner == null || repo == null) {

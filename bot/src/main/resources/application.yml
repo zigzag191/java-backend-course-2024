@@ -5,6 +5,10 @@ app:
     max-retries: 3
     retry-step: 2s
     backoff-strategy: constant
+    retry-codes:
+      - 500
+      - 502
+      - 503
   rate-limit-config:
     bucket-capacity: 60
     cache-expiration-duration: 10m
