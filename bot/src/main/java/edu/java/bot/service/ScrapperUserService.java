@@ -35,7 +35,7 @@ public class ScrapperUserService implements UserService {
             scrapperClient.registerChat(chatId);
             return true;
         } catch (BadScrapperApiRequestException ex) {
-            if (ex.getStatusCode() == HttpStatus.CONFLICT.value()) {
+            if (ex.getStatusCode().value() == HttpStatus.CONFLICT.value()) {
                 return false;
             }
             throw ex;
@@ -50,10 +50,10 @@ public class ScrapperUserService implements UserService {
             return true;
         } catch (BadScrapperApiRequestException ex) {
             var code = ex.getStatusCode();
-            if (code == HttpStatus.CONFLICT.value()) {
+            if (code.equals(HttpStatus.CONFLICT)) {
                 return false;
             }
-            if (code == HttpStatus.NOT_IMPLEMENTED.value()) {
+            if (code.equals(HttpStatus.NOT_IMPLEMENTED)) {
                 throw new UnsupportedResourceException();
             }
             throw ex;
@@ -66,8 +66,8 @@ public class ScrapperUserService implements UserService {
             scrapperClient.untrackLink(chatId, link);
             return true;
         } catch (BadScrapperApiRequestException ex) {
-            long code = ex.getStatusCode();
-            if (code == HttpStatus.CONFLICT.value() || code == HttpStatus.NOT_FOUND.value()) {
+            var code = ex.getStatusCode();
+            if (code.equals(HttpStatus.CONFLICT) || code.equals(HttpStatus.NOT_FOUND)) {
                 return false;
             }
             throw ex;
@@ -106,7 +106,7 @@ public class ScrapperUserService implements UserService {
         for (var update : updates.entrySet()) {
             message.escape(update.getKey().getDescription());
             if (update.getValue() > 1) {
-                message.plain(" - x").escape(update.getValue().toString());
+                message.plain(" \\- x").escape(update.getValue().toString());
             }
             message.newLine();
         }

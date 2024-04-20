@@ -4,12 +4,14 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class GithubRepoUpdateInfo extends LinkUpdateInfo {
 
-    List<Activity> activities;
+    private List<Activity> activities;
 
     public record Activity(ActivityType activityType, OffsetDateTime timestamp) {}
 

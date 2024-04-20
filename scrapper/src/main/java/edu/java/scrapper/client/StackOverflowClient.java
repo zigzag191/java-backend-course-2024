@@ -4,11 +4,14 @@ import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
 import java.time.OffsetDateTime;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class StackOverflowClient {
 
     private static final String NEW_ANSWERS_FILTER = "!)BlpJaNLs0YCRfKE41h";
@@ -19,10 +22,7 @@ public class StackOverflowClient {
     public static final String FROM_DATE_QUERY_PARAM = "fromdate";
 
     private final WebClient webClient;
-
-    public StackOverflowClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private final Retry retryPolicy;
 
     public Activities getNewActivities(long questionId, OffsetDateTime fromDate) {
         if (fromDate == null) {
@@ -54,7 +54,8 @@ public class StackOverflowClient {
                 .build(questionId))
             .retrieve()
             .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
-            .toEntity(StackOverflowAnswersResponse.class);
+            .toEntity(StackOverflowAnswersResponse.class)
+            .retryWhen(retryPolicy);
     }
 
     private Mono<ResponseEntity<StackOverflowCommentsResponse>> getNewComments(
@@ -70,14 +71,15 @@ public class StackOverflowClient {
                 .build(questionId))
             .retrieve()
             .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
-            .toEntity(StackOverflowCommentsResponse.class);
+            .toEntity(StackOverflowCommentsResponse.class)
+            .retryWhen(retryPolicy);
     }
 
     private Mono<Exception> determineException(ClientResponse response) {
         return response
             .bodyToMono(String.class)
             .switchIfEmpty(Mono.just(""))
-            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(response.statusCode().value(), error)));
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(response.statusCode(), error)));
     }
 
     public record Activities(StackOverflowAnswersResponse answers, StackOverflowCommentsResponse comments) {
