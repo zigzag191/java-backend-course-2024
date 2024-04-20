@@ -3,10 +3,44 @@ app:
     enable: true
     interval: 30s
     force-check-delay: 10s
-  stack-overflow-base-url: https://api.stackexchange.com
-  github-base-url: https://api.github.com
-  bot-base-url: http://localhost:8090
+  stack-overflow-client:
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: constant
+    base-url: https://api.stackexchange.com
+    retry-codes:
+      - 500
+      - 502
+      - 503
+  github-client:
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: exponential
+    base-url: https://api.github.com
+    retry-codes:
+      - 500
+      - 502
+      - 503
+  bot-client:
+    base-url: http://localhost:8090
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: linear
+    retry-codes:
+      - 500
+      - 502
+      - 503
   database-access-type: jpa
+  rate-limit-config:
+    bucket-capacity: 60
+    cache-expiration-duration: 10m
+    refill-interval: 1m
+  kafka-producer-config:
+    bootstrap-servers: "localhost:9092"
+    linger-ms: 100
+    updates-topic-name: linkUpdates
+    acknowledgments: 1
+  use-queue: true
 
 spring:
   application:

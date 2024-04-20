@@ -2,7 +2,6 @@ package edu.java.scrapper.domain.service.linkupdater;
 
 import edu.java.common.dto.linkupdate.GithubRepoUpdateInfo;
 import edu.java.common.exception.UnsuccessfulRequestException;
-import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GitHubClient;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
@@ -11,6 +10,8 @@ import edu.java.scrapper.domain.model.Link;
 import edu.java.scrapper.domain.model.TgChat;
 import edu.java.scrapper.domain.service.LinkService;
 import edu.java.scrapper.domain.service.TgChatService;
+import edu.java.scrapper.domain.service.UpdateNotificationService;
+import edu.java.scrapper.domain.service.exception.KafkaException;
 import edu.java.scrapper.domain.service.exception.UnsupportedResourceException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -28,7 +29,7 @@ public class GithubRepositoryUpdater implements LinkUpdater {
     public static final int REPO_PATH_LENGTH = 3;
 
     private final GitHubClient gitHubClient;
-    private final BotClient botClient;
+    private final UpdateNotificationService updateNotificationService;
     private final TgChatService tgChatService;
     private final LinkService linkService;
     private OffsetDateTime apiTimeoutResetTime = OffsetDateTime.now();
@@ -86,7 +87,7 @@ public class GithubRepositoryUpdater implements LinkUpdater {
                     activity.timestamp()
                 ))
                 .toList());
-            botClient.sendLinkUpdate(
+            updateNotificationService.send(
                 link.getLinkId(),
                 link.getUrl(),
                 "new repo activity",
@@ -103,6 +104,9 @@ public class GithubRepositoryUpdater implements LinkUpdater {
             return false;
         } catch (BadBotApiRequestException ex) {
             log.error("bad bot API request: [{}] {}", ex.getStatusCode(), ex.getResponseBody());
+            return false;
+        } catch (KafkaException ex) {
+            log.error("unable to send message to kafka: {}", ex.getMessage());
             return false;
         }
     }

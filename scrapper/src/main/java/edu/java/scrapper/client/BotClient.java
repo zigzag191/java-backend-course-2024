@@ -7,18 +7,18 @@ import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.exception.BadBotApiRequestException;
 import java.net.URI;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class BotClient {
 
     private final WebClient webClient;
-
-    public BotClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private final Retry retryPolicy;
 
     public void sendLinkUpdate(long id, URI link, String description, List<Long> tgChatIds, LinkUpdateInfo info) {
         if (link == null || description == null || tgChatIds == null) {
@@ -30,6 +30,7 @@ public class BotClient {
             .retrieve()
             .onStatus(status -> !status.is2xxSuccessful(), this::determineException)
             .toBodilessEntity()
+            .retryWhen(retryPolicy)
             .block();
     }
 
@@ -39,14 +40,14 @@ public class BotClient {
             return response
                 .bodyToMono(ApiErrorResponse.class)
                 .flatMap(error -> Mono.error(new BadBotApiRequestException(
-                    status.value(),
+                    status,
                     error
                 )));
         }
         return response
             .bodyToMono(String.class)
             .flatMap(error -> Mono.error(new UnsuccessfulRequestException(
-                status.value(),
+                status,
                 error
             )));
     }

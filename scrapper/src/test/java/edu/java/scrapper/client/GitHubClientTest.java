@@ -2,12 +2,15 @@ package edu.java.scrapper.client;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.scrapper.client.dto.GitHubActivityResponse;
 import edu.java.scrapper.client.exception.ApiTimeoutException;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -50,7 +53,10 @@ public class GitHubClientTest {
         var webClient = WebClient.builder()
             .baseUrl(wireMockRuntimeInfo.getHttpBaseUrl())
             .build();
-        client = new GitHubClient(webClient);
+        client = new GitHubClient(webClient, new CustomRetrySpecBuilder.Constant()
+            .withMaxReties(3)
+            .withStep(Duration.ofSeconds(1))
+            .build());
     }
 
     @Test
@@ -81,7 +87,7 @@ public class GitHubClientTest {
         assertThatExceptionOfType(UnsuccessfulRequestException.class)
             .isThrownBy(() -> client.getPastDayActivities("wrong_name", "wrong_repo"))
             .extracting(UnsuccessfulRequestException::getStatusCode, UnsuccessfulRequestException::getResponseBody)
-            .contains(409, "bad request");
+            .contains(HttpStatus.CONFLICT, "bad request");
     }
 
     @Test

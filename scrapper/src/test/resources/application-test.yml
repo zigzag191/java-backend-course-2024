@@ -3,7 +3,26 @@ app:
     enable: false
     interval: 1000s
     force-check-delay: 10s
-  bot-base-url: http://localhost:8090
+  stack-overflow-client:
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: constant
+    base-url: https://api.stackexchange.com
+  github-client:
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: exponential
+    base-url: https://api.github.com
+  bot-client:
+    base-url: http://localhost:8090
+    max-retries: 3
+    retry-step: 2s
+    backoff-strategy: linear
+  database-access-type: jpa
+  rate-limit-config:
+    bucket-capacity: 60
+    cache-expiration-duration: 10m
+    refill-interval: 1m
 
 spring:
   application:

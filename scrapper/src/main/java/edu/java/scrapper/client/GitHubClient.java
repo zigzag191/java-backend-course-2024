@@ -8,22 +8,22 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class GitHubClient {
 
     private static final Duration DEFAULT_RATE_LIMIT_TIMEOUT = Duration.ofMinutes(5);
 
     private final WebClient webClient;
-
-    public GitHubClient(WebClient webClient) {
-        this.webClient = webClient;
-    }
+    private final Retry retryPolicy;
 
     public List<GitHubActivityResponse> getPastDayActivities(String owner, String repo) {
         if (owner == null || repo == null) {
@@ -38,6 +38,7 @@ public class GitHubClient {
             .retrieve()
             .onStatus(code -> !code.is2xxSuccessful(), this::determineException)
             .toEntity(new ParameterizedTypeReference<List<GitHubActivityResponse>>() {})
+            .retryWhen(retryPolicy)
             .block();
 
         if (response == null) {
@@ -51,12 +52,12 @@ public class GitHubClient {
         var statusCode = response.statusCode();
         if (isRateLimitTimeOut(statusCode)) {
             var timeoutReset = getRateLimitTimeOutResetTime(response);
-            return Mono.error(new ApiTimeoutException(timeoutReset));
+            return Mono.error(new ApiTimeoutException(statusCode, timeoutReset));
         }
         return response
             .bodyToMono(String.class)
             .switchIfEmpty(Mono.just(""))
-            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(statusCode.value(), error)));
+            .flatMap(error -> Mono.error(new UnsuccessfulRequestException(statusCode, error)));
     }
 
     private boolean isRateLimitTimeOut(HttpStatusCode statusCode) {
