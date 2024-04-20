@@ -13,6 +13,17 @@ app:
     bucket-capacity: 60
     cache-expiration-duration: 10m
     refill-interval: 1m
+  kafka-consumer-config:
+    auto-offset-reset: earliest
+    group-id: tg-bot
+    bootstrap-servers: localhost:9092
+    updates-topic-name: linkUpdates
+    trusted-packages:
+      - edu.java.common.dto.linkupdate
+  kafka-dlq-producer-config:
+    bootstrap-servers: localhost:9092
+    linger-ms: 100
+    dlq-topic-name: updates_dlq
 
 spring:
   application:

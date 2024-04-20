@@ -35,6 +35,12 @@ app:
     bucket-capacity: 60
     cache-expiration-duration: 10m
     refill-interval: 1m
+  kafka-producer-config:
+    bootstrap-servers: "localhost:9092"
+    linger-ms: 100
+    updates-topic-name: linkUpdates
+    acknowledgments: 1
+  use-queue: true
 
 spring:
   application:

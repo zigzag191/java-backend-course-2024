@@ -106,7 +106,7 @@ public class ScrapperUserService implements UserService {
         for (var update : updates.entrySet()) {
             message.escape(update.getKey().getDescription());
             if (update.getValue() > 1) {
-                message.plain(" - x").escape(update.getValue().toString());
+                message.plain(" \\- x").escape(update.getValue().toString());
             }
             message.newLine();
         }
