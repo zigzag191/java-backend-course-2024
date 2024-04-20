@@ -4,6 +4,7 @@ import edu.java.common.client.BackoffStrategy;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +23,8 @@ public record ApplicationConfig(
         String baseUrl,
         int maxRetries,
         Duration retryStep,
-        BackoffStrategy backoffStrategy
+        BackoffStrategy backoffStrategy,
+        Set<Integer> retryCodes
     ) {
     }
 

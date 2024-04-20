@@ -1,17 +1,17 @@
 package edu.java.scrapper.client;
 
-import edu.java.common.client.CustomRetrySpecBuilder;
 import edu.java.common.exception.UnsuccessfulRequestException;
 import edu.java.scrapper.client.dto.StackOverflowAnswersResponse;
 import edu.java.scrapper.client.dto.StackOverflowCommentsResponse;
 import java.time.OffsetDateTime;
-import org.springframework.http.HttpStatusCode;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
+@RequiredArgsConstructor
 public class StackOverflowClient {
 
     private static final String NEW_ANSWERS_FILTER = "!)BlpJaNLs0YCRfKE41h";
@@ -23,13 +23,6 @@ public class StackOverflowClient {
 
     private final WebClient webClient;
     private final Retry retryPolicy;
-
-    public StackOverflowClient(WebClient webClient, CustomRetrySpecBuilder builder) {
-        this.webClient = webClient;
-        this.retryPolicy = builder
-            .withStatusCodeFilter(HttpStatusCode::is5xxServerError)
-            .build();
-    }
 
     public Activities getNewActivities(long questionId, OffsetDateTime fromDate) {
         if (fromDate == null) {

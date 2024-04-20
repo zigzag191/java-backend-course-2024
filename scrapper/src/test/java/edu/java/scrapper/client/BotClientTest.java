@@ -44,7 +44,8 @@ public class BotClientTest {
         var webClient = WebClient.builder().baseUrl(wireMockRuntimeInfo.getHttpBaseUrl()).build();
         client = new BotClient(webClient, new CustomRetrySpecBuilder.Exponential()
             .withMaxReties(3)
-            .withStep(Duration.ofSeconds(1)));
+            .withStep(Duration.ofSeconds(1))
+            .build());
     }
 
     @Test
