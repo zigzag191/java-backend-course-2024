@@ -4,14 +4,16 @@ import edu.java.scrapper.domain.model.LinkType;
 import edu.java.scrapper.domain.service.linkupdater.GithubRepositoryUpdater;
 import edu.java.scrapper.domain.service.linkupdater.LinkUpdaterManager;
 import edu.java.scrapper.domain.service.linkupdater.StackoverflowQuestionUpdater;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnProperty(value = "app.scheduler.enable", havingValue = "true")
 public class LinkProcessorsConfig {
 
     @Bean
-    public LinkUpdaterManager linkProcessorManager(
+    public LinkUpdaterManager linkUpdaterManager(
         StackoverflowQuestionUpdater stackoverflowQuestionProcessor,
         GithubRepositoryUpdater githubRepositoryProcessor
     ) {
