@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.Chat;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.response.BaseResponse;
+import edu.java.bot.metric.ProcessedTgMessagesMetric;
 import edu.java.bot.telegramapi.response.TelegramMessageSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -47,10 +49,13 @@ public class TelegramUpdateListenerTest {
             return null;
         }).when(telegramBot).setUpdatesListener(any(), (ExceptionHandler) any());
 
+        var metric = mock(ProcessedTgMessagesMetric.class);
+        doNothing().when(metric).increment();
+
         var updateDispatcher = new UpdateDispatcher(new Object());
 
         var messageSender = new TelegramMessageSender(telegramBot);
-        var updateListener = new TelegramUpdateListener(telegramBot, updateDispatcher, messageSender);
+        var updateListener = new TelegramUpdateListener(telegramBot, updateDispatcher, messageSender, metric);
 
         updateListener.startListeningForUpdates();
 
