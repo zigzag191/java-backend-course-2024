@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class LinkProcessorsConfig {
 
     @Bean
-    public LinkUpdaterManager linkProcessorManager(
+    public LinkUpdaterManager linkUpdaterManager(
         StackoverflowQuestionUpdater stackoverflowQuestionProcessor,
         GithubRepositoryUpdater githubRepositoryProcessor
     ) {
